@@ -1,109 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>第六章 应用层 on Computer Networking</title>
-    <link>https://zvictorliu.github.io/computer_networking/application_layer/</link>
-    <description>Recent content in 第六章 应用层 on Computer Networking</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://zvictorliu.github.io/computer_networking/application_layer/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>6.1 DHCP</title>
-      <link>https://zvictorliu.github.io/computer_networking/application_layer/dhcp/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/application_layer/dhcp/</guid>
-      <description>动态主机配置协议DHCP#主机访问web服务器需要配置IP地址、子网掩码、默认网关、DNS服务器等信息
-但是手工配置比较麻烦，于是设置了DHCP服务器，自动获取配置信息
-其过程是：
-客户启动DHCP：广播DHCP发现报文，此时由于还未配置IP地址等，数据报中的源IP地址用0.0.0.0，目的地址用255.255.255.255。这些是默认写好的，报文中还有自己的MAC地址和事务ID 所有设备收到数据报：对于DHCP客户端没有相应端口67，丢弃；对于DHCP服务器接收并进行响应 报文中有客户的MAC地址，服务器查找数据库中的配置信息。有则发送DHCP提供报文，没有则发送默认配置信息。目的IP仍然为广播地址 所有设备收到数据报：DHCP服务器有相应端口68因而丢弃，DHCP客户根据事务ID知道是自己请求的，接收 再次广播请求服务器同意（可能有多个DHCP服务器），此时还是0.0.0.0 服务器确认后，才进行配置 同时还有ARP检查IP地址是否已经被占用
-如果有路由器，路由器是不转发广播报文的
-办法是给路由器配置DHCP服务器的IP地址，使之成为中继代理，将广播报文只转发给DHCP服务器</description>
-    </item>
-    
-    <item>
-      <title>6.2 DNS</title>
-      <link>https://zvictorliu.github.io/computer_networking/application_layer/dns/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/application_layer/dns/</guid>
-      <description>域名系统DNS#访问Web服务器（测试连通性命令：ping），经典的就是浏览器输入网址-得到网页的过程
-Domain Name System, DNS 是一种命名系统，和IP地址对应，便于记忆
-层次域名：一个DNS服务器显然装不下那么多的域名，所以是分层次的
-域名命名规则#层次树状域名结构：低级在左，顶级在右
-各级域名交由上一级的域名管理机构管理，最高的由ICANN管理
-顶级域名TLD主要有三类：
-国家地区：.cn, .uk, .hk 等等 通用顶级域名：.com 公司，.org 非盈利组织，.gov政府 等等 基础结构域名：只有一个arpa，用于反向域名解析，IP地址反向解析为域名 国家下面的就由国家自己管理，名称相等的等级未必相同
-域名服务器#服务器进行域名解析，一个服务器的管辖范围称之为区
-根域名服务器：知道所有顶级域名服务器IP地址，因特网上有13“个”（实际是服务器集群），它不直接解析，而是返回所属顶级域名服务器的IP地址 顶级域名服务器：管理在其上注册的所有二级域名 权限域名服务器：管理某个区的域名，主机的域名在这里登记，这里有域名和IP地址的映射关系 本地域名服务器（默认）：本机的报文首先送往本地域名服务器，它起到代理的作用，将报文转发到上面等级结构中
-域名解析过程#递归查询#迭代查询#一般是，主机以递归方式向本地服务器查询（因为之间可能也是有转发的），本地服务器以迭代方式向根服务器查询，服务器给出答案或者找答案的地方
-同时，每个DNS服务器上有高速缓存，方便快速查找
-DNS报文使用UDP服务</description>
-    </item>
-    
-    <item>
-      <title>6.3 FTP</title>
-      <link>https://zvictorliu.github.io/computer_networking/application_layer/ftp/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/application_layer/ftp/</guid>
-      <description>文件传输协议FTP#屏蔽了计算机的细节
-交互式访问：指明文件的类型与格式，并有权限
-仍是C/S模式：FTP客户可将文件上传至FTP服务器，客户也可从中下载 ，普通的PC也可以作为服务器
-工作原理#客户向服务 器建立两个并行的TCP连接：
-控制连接：客户用临时端口-服务器21号端口，传送控制命令 数据连接：另一个临时端口-服务器20号端口（主动模式才是），进行文件传送 控制连接在会话期间一直保持打开，而数据连接只有需要文件传输时才建立，传输完就关闭
-服务器上主进程负责接收请求，子进程负责处理单个请求
-控制进程接到请求后创建数据传送进程和数据连接
-两种数据传输模式：
-主动模式：PORT 客户端和服务器连接后，客户端自己开发一个端口，将端口号和PORT命令发送给服务器，服务器于是将20号端口和这个端口建立数据连接 被动模式：PASV 服务器收到PASV命令后，随机开放一个端口并告知客户端，客户端与之建立数据连接 FTP修改文件：先下载下来，修改后再传上去
-网络文件系统NFS：能够远程操控，只复制一个小片段回来修改然后安装上去</description>
-    </item>
-    
-    <item>
-      <title>6.4 E-mail</title>
-      <link>https://zvictorliu.github.io/computer_networking/application_layer/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/application_layer/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/</guid>
-      <description>电子邮件E-mail#异步通信方式算是一种思维革新吧
-把东西放到信箱里，不需要同时在场
-邮件系统结构#用户代理UA：用户和电子邮件系统的接口，一般就是电子邮件客户端软件
-邮件服务器：它们之间发送和接收邮件，服务商提供
-协议：用户代理和邮件服务器之间的协议
-过程是这样的：服务器转发缓存队列里的邮件，用户在服务器上有个信箱
-协议包括发送和读取：
-STMP和POP3#STMP#发送服务器与接收服务器的连接建立：发送服务器周期性扫描缓冲区，发现有邮件就去和接收服务器建立TCP连接（25）
-它们之间是命令-应答的交互方式
-邮件传送：
-先MAIL FROM: &amp;lt;xxx&amp;gt;命令，看是否有OK返回，检查是否准备好接收 发送 RCPT TO: &amp;lt;xxx&amp;gt;命令，看是否有OK返回，检查地址是否正确 发送DATA命令，理论返回354 start mail input; end with &amp;lt;CR&amp;gt;&amp;lt;LF&amp;gt;.&amp;lt;CR&amp;gt;&amp;lt;LF&amp;gt; CR（Carriage Return）表示回车，CR（Carriage Return）表示回车，但这个跟操作系统有关，Windows下一行是CR+LF，而Linux只有LF，所以我们git有时候会有这个东西的替换 然后发送具体内容，回复OK 发出QUIT，回复xxx POP3和IMAP#邮局协议POP：TCP 110，只能下载（可选是否删除），不能进行管理
-因特网报文存取协议IMAP：TCP 143，功能更强大，可以在主机上操作服务器上的邮箱
-邮件格式和MIME#邮件的格式是 信封+内容（包括首部和主体）
-首部包括一些关键字：
-From: 源（UA帮填） To: 目标 Subject: 可选，用户填写主题 邮件系统自动从首部中提取需要的信息写在信封上
-SMP只能传送ASCII码文本数据，于是有多用途网际邮件扩充MIME: 在SMTP基础上定义非ASCII码的编码规则，将非ASCII码数据转换
-补充：现在的基于WWW的电子邮件，浏览器HTTP协议</description>
-    </item>
-    
-    <item>
-      <title>6.5 WWW</title>
-      <link>https://zvictorliu.github.io/computer_networking/application_layer/%E4%B8%87%E7%BB%B4%E7%BD%91/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/application_layer/%E4%B8%87%E7%BB%B4%E7%BD%91/</guid>
-      <description>万维网#它并不是一种计算机网络（LAN WAN等才是），而是一个是超文本信息文档储藏所，是Web而非net，是一个分布式应用（信息可以放在不同的站点上）
-文档存于WWW服务器
-一切事物使用统一资源定位符URL标识，通过超文本传输协议HTTP传送，用超文本标记语言HTML对文档结构的标记描述网页的结构和内容，CSS描述网页的样式，JavaScript控制网页的行为，浏览器进行渲染
-HTTP#浏览器和WWW服务器请求、传输的协议
-工作原理#采用TCP连接，报文是HTTP格式：
-在1.0版本中是非持续连接，每请求一个文件就需要连接一次（连接建立-请求-响应-断开-重新连接-请求-。。。）
-1.1版本改为持续连接，并且流水线，一般考非流水线（连接建立-请求-响应-请求-响应-。。。连接断开）
-报文格式#例如：
-例如↕请求报文：
-响应报文中状态行：
-Cookie#HTTP是无状态的，并不记忆客户是否访问过，但如果想记忆需要用到Cookie，服务器给用户分配一个识别码并在后台数据库建项，以后用户访问的报文是带着识别码的，从而在服务器的数据库找到活动记录
-补充缓存与代理#存放web缓存的中间系统即为代理服务器Proxy Server
-web缓存存放了最近的请求和响应，主机首先向代理服务器请求，代理服务器发现当新请求与暂存的相同就直接返回，而不需要url地址访问因特网
-代理服务器上的文件都有有效期，避免原始服务器和代理服务器上文件不同（比如我github page部署成功后访问网页并没有马上改变</description>
-    </item>
-    
-  </channel>
-</rss>

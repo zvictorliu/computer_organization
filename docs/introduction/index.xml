@@ -1,58 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>第一章 序章 on Computer Networking</title>
-    <link>https://zvictorliu.github.io/computer_networking/introduction/</link>
-    <description>Recent content in 第一章 序章 on Computer Networking</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://zvictorliu.github.io/computer_networking/introduction/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>1.1 计网概述</title>
-      <link>https://zvictorliu.github.io/computer_networking/introduction/%E8%AE%A1%E7%BD%91%E6%A6%82%E8%BF%B0/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/introduction/%E8%AE%A1%E7%BD%91%E6%A6%82%E8%BF%B0/</guid>
-      <description>概述#因特网概念#节点通过链路（有线，无线）连成一个网络
-不同的网络通过路由器连接起来构成更大的网络，称为互联网(internet)
-而现在世界上的最大互联网叫因特网(Internet)
-接入：因特网服务提高者ISP 因特网组成↕定义和功能#这部分比较笼统，不细讲
-分类#主要需要掌握的分类标准：
-分布范围广域网 WAN：国家地区 城域网 MAN：城市 局域网 LAN：漏洞，学校 个人网 PAN：个人，蓝牙，Wifi等等 拓扑结构性能指标#速率 Speed：aka数据传输率、比特率，每秒多少比特，单位bps
-注意这里的K M G等是10进制的，而表示大小的是2进制的 带宽 Baudwidth：最高速率
-木桶效应，实际传输时的速率是 [主机接口速率，交换机接口速率，线路带宽] 中最小的 吞吐量 Throughput：单位实际内通过的实际数据量，无论方向
-时延 Delay：
-产生地方：发送，传播，处理（检查等等），排队 发送：分组长度/信道宽度 传播：信道长度/电磁波传输速率 接收和传播是同时的，因此不计入接收时延 分析方法，一般不是精确计算，抓住主要↕&amp;lt;img src=&amp;quot;https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230617161250224.png&amp;quot; alt=&amp;quot;image-20230617161250224&amp;quot; style=&amp;quot;zoom:67%;&amp;quot; /&amp;gt;时延带宽积：传播时延*信道带宽，反映发送端发的第一个比特到达终点时已经发出去了多少个比特，以比特为单位的链路长度
-往返时延 RTT：双向交互时，发送端发送短分组到收到确认的时间
-信道利用率：某信道有多少时间有数据通过
-网络利用率：所有信道加权平均 </description>
-    </item>
-    
-    <item>
-      <title>1.2 层次化体系结构</title>
-      <link>https://zvictorliu.github.io/computer_networking/introduction/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/introduction/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/</guid>
-      <description>计网层次化体系结构#OSI/ISO 到 TCP/IP 有历史、市场等原因
-学的是综合两种的 原理体系结构
-*分层意义#分层是把复杂问题分为小的局部问题
-什么样的介质，什么样的接口，什么样的信号（物理层考虑） 如何标识主机，即编址问题；如何从比特流中读出，即封装问题；协调争用总线（数据链路层） 有多个网络时如何标识，即网络和主机共同编址问题；路径选择、转发问题（网络层） 如何标识应用程序，把分组给谁的问题；出错应该如何处理（传输层） 应用程序的协议设计（应用层） 举例说明视频专用术语#*实体#发送和接收信息的硬件或软件进程
-在收发双方相同层次下就是对等实体
-协议#控制两个对等实体进行逻辑通信的规则
-这种逻辑通信思想是屏蔽其它层、站在某一层的角度来看的假设
-三要素：
-语法：信息的格式 语义：要做的操作 同步：时序关系（先后，状态转换） 服务#底层向高层提高服务，上层使用下层服务，不知道具体协议
-接口：即服务访问点，相邻两层实体交互信息的逻辑接口，它们交互的命令叫做服务原语
-每层对等实体之间传输的数据包有专门的名字，统称协议数据单元PDU 层与层之间的数据包称为服务数据单元SDU 总体图↕几种体系结构#计网的体系结构是一个分层模型，在功能上的模型，就是体系结构Architecture概念
-每一层有自己的数据传输单位，各有自己的名称：比特、帧、分组、报文段
-分数据部分SDU和控制信息PCI，共同组成协议数据单元PDU（报文）
-网络协议：数据交换的规则，由语法、语义和同步组成；
-语法：指定数据传输的格式 语义：要完成的功能 同步：事件执行的顺序 接口：相邻两层交换信息的连接点
-服务：下层为上层提供的功能调用
-ISO/OSI#ISO指的是国际标准化组织，他们提出的一种网络体系结构模型：开放式互连参考模型 (Open System Interconnection Reference Model, OSI)
-共有7层，自底向上是
-物理层：机械电子层面的原始比特流传输 数据链路层：将原始比特流变为逻辑传输线路 网络层：控制子网运行 传输层：两个进程通信？ 会话层：管理通信会话 表示层：数据处理，格式转换、编码解码等等 应用层： TCP/IP#另一种网络体系结构</description>
-    </item>
-    
-  </channel>
-</rss>

@@ -1,71 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>第四章 网络层 on Computer Networking</title>
-    <link>https://zvictorliu.github.io/computer_networking/network_layer/</link>
-    <description>Recent content in 第四章 网络层 on Computer Networking</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://zvictorliu.github.io/computer_networking/network_layer/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>4.1 IP地址</title>
-      <link>https://zvictorliu.github.io/computer_networking/network_layer/ip/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/network_layer/ip/</guid>
-      <description>IP地址#点分十进制表示法
-编址方法发展#分类编址#注：1~126是指最高的8位，最高位必须是0，因此表示范围是0~127，但是0和127都有特殊用，所以实际A类的范围是1~126
-只有A B C类地址才可被分配给各接口
-说“一个A类网络”：每个网络号代表一个网络，该网络下是多个主机
-特殊地址：主机号全0表示网络地址，主机号全1表示广播地址，不分配给主机接口
-总结：A类网络0和127，主机全0和全1 这些不能指派
-具体是这些↕划分子网#从主机号位数中借出来分给子网号，从而对同一网络下大量的IP地址进行进一步划分几个子网（建小群）
-用子网掩码来表示借用了多少：网络号+子网号为1，主机号（划分之后的）为0，进行与运算就得到了网络地址（主机号全为0）；根据第一段的范围可以知道是哪类网络从而确定网络号位数
-默认子网掩码：没有子网划分（不借位）的情况
-无分类的编址方法#即CIDR，不再区别ABC和子网划分
-斜线表示法：表示网络前缀的比特数量
-同一网络前缀下连续的IP地址组成一个CIDR地址块，表示同一网络
-路由聚合：必经之路往后归为一个
-​	共同前缀法，同样的共同前缀是同一个下一跳
-​	前缀越长的路由更具体，因此在路由表当中进行最长前缀匹配
-分组格式#IP协议定义IP分组和其数据格式
-一个IP分组的格式为：首部+数据
-首部中的重要字段：版本，长度，，，，
-当IP数据报较长超过链路层的MTU时，将其分为多个小IP数据报，称为片，在目的地被重新组装（具体是通过标识号来确定属于同一个IP数据报下）
-网络地址转换NAT#将专用网络地址转换为共用地址，专用网只占一个全球IP地址，下面有用于内部管理的IP地址，对互联网隐藏
-这种私有地址只能在本网络下使用，和公网上的不是同一个主机，不同网络间复用
-只有NAT路由器的地址是global的，不同端口映射到局域网内不同私有IP地址，所以外面的人是通过NAT转换到内部的主机的。而为了统一性，在网内也有这么个格式和公有地址一样的来进行区分，只不过搜索范围局限在这里面而不是全球
-具体来说：本地网内一主机发送给网外的服务器，先发到NAT路由器上，NAT路由器修改数据报的源地址为自己的公网地址，并生成新端口号，发送给服务器，对于服务器来说并没有意识到，发回来，经过NAT路由表NAT路由器知道这个应该给谁
-所以就是一个中转站
-ARP DHCP ICMP#MAC地址（链路层）#广播信道需要地址来区分
-MAC地址是硬件写死的，也叫物理地址
-每个网络适配器有一个全球唯一的MAC地址（因为电磁波就是广播式的）
-但是，仅有MAC地址做标识无法区分不同网络
-地址解析协议ARP#链路传送时必须要MAC地址，所以需要通过IP地址找到MAC地址
-ARP高速缓存表：
-​	找得到，填入数据报发送
-​	找不到，广播-响应-建项
-动态主机配置协议DHCP#应用层，将计算机插入到新的网络，分频IP地址，不需要手工参与
-网际控制报文协议ICMP#网络层，报告差错和异常情况</description>
-    </item>
-    
-    <item>
-      <title>4.2 路由算法</title>
-      <link>https://zvictorliu.github.io/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95/</guid>
-      <description>路由算法#根据路由表的维护：
-静态路由 手工配置 动态路由 相互连接的路由器彼此交换信息，按照一定算法优化出来 距离-向量算法#链路状态算法#层次路由概念#</description>
-    </item>
-    
-    <item>
-      <title>4.3 路由协议</title>
-      <link>https://zvictorliu.github.io/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/</guid>
-      <description>路由协议#</description>
-    </item>
-    
-  </channel>
-</rss>
