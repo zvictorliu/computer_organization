@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="域名系统DNS#访问Web服务器（测试连通性命令：ping），经典的就是浏览器输入网址-得到网页的过程
+Domain Name System, DNS 是一种命名系统，和IP地址对应，便于记忆
+层次域名：一个DNS服务器显然装不下那么多的域名，所以是分层次的
+域名命名规则#层次树状域名结构：低级在左，顶级在右
+各级域名交由上一级的域名管理机构管理，最高的由ICANN管理
+顶级域名TLD主要有三类：
+国家地区：.cn, .uk, .hk 等等 通用顶级域名：.com 公司，.org 非盈利组织，.gov政府 等等 基础结构域名：只有一个arpa，用于反向域名解析，IP地址反向解析为域名 国家下面的就由国家自己管理，名称相等的等级未必相同
+域名服务器#服务器进行域名解析，一个服务器的管辖范围称之为区
+根域名服务器：知道所有顶级域名服务器IP地址，因特网上有13“个”（实际是服务器集群），它不直接解析，而是返回所属顶级域名服务器的IP地址 顶级域名服务器：管理在其上注册的所有二级域名 权限域名服务器：管理某个区的域名，主机的域名在这里登记，这里有域名和IP地址的映射关系 本地域名服务器（默认）：本机的报文首先送往本地域名服务器，它起到代理的作用，将报文转发到上面等级结构中
+域名解析过程#递归查询#迭代查询#一般是，主机以递归方式向本地服务器查询（因为之间可能也是有转发的），本地服务器以迭代方式向根服务器查询，服务器给出答案或者找答案的地方
+同时，每个DNS服务器上有高速缓存，方便快速查找
+DNS报文使用UDP服务">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="6.2 DNS" />
+<meta property="og:description" content="域名系统DNS#访问Web服务器（测试连通性命令：ping），经典的就是浏览器输入网址-得到网页的过程
+Domain Name System, DNS 是一种命名系统，和IP地址对应，便于记忆
+层次域名：一个DNS服务器显然装不下那么多的域名，所以是分层次的
+域名命名规则#层次树状域名结构：低级在左，顶级在右
+各级域名交由上一级的域名管理机构管理，最高的由ICANN管理
+顶级域名TLD主要有三类：
+国家地区：.cn, .uk, .hk 等等 通用顶级域名：.com 公司，.org 非盈利组织，.gov政府 等等 基础结构域名：只有一个arpa，用于反向域名解析，IP地址反向解析为域名 国家下面的就由国家自己管理，名称相等的等级未必相同
+域名服务器#服务器进行域名解析，一个服务器的管辖范围称之为区
+根域名服务器：知道所有顶级域名服务器IP地址，因特网上有13“个”（实际是服务器集群），它不直接解析，而是返回所属顶级域名服务器的IP地址 顶级域名服务器：管理在其上注册的所有二级域名 权限域名服务器：管理某个区的域名，主机的域名在这里登记，这里有域名和IP地址的映射关系 本地域名服务器（默认）：本机的报文首先送往本地域名服务器，它起到代理的作用，将报文转发到上面等级结构中
+域名解析过程#递归查询#迭代查询#一般是，主机以递归方式向本地服务器查询（因为之间可能也是有转发的），本地服务器以迭代方式向根服务器查询，服务器给出答案或者找答案的地方
+同时，每个DNS服务器上有高速缓存，方便快速查找
+DNS报文使用UDP服务" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_networking/application_layer/dns/" /><meta property="article:section" content="application_layer" />
+
+
+<title>6.2 DNS | Computer Networking</title>
+<link rel="manifest" href="/computer_networking/manifest.json">
+<link rel="icon" href="/computer_networking/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_networking/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_networking/flexsearch.min.js"></script>
+  <script defer src="/computer_networking/en.search.min.0444688c1bdbd11b09443fd6f9ef10410202522d71f5e3a0ace21499bb86a827.js" integrity="sha256-BERojBvb0RsJRD/W&#43;e8QQQICUi1x9eOgrOIUmbuGqCc=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_networking/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/3d-wifi.png" alt="Logo" /><span>Computer Networking</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/" class="">第一章 序章</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/%E8%AE%A1%E7%BD%91%E6%A6%82%E8%BF%B0/" class="">1.1 计网概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" class="">1.2 层次化体系结构</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/" class="">第二章 物理层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/%E9%80%9A%E4%BF%A1%E5%9F%BA%E7%A1%80/" class="">2.1 通信基础知识</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/%E4%BA%A4%E6%8D%A2/" class="">2.2 交换方式</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/" class="">第三章 数据链路层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E7%BB%84%E5%B8%A7/" class="">3.1 帧的封装</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%B7%AE%E9%94%99%E6%8E%A7%E5%88%B6/" class="">3.2 差错控制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93/" class="">3.3 可靠传输机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E4%BB%8B%E8%B4%A8%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6/" class="">3.4 介质访问控制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8E%E5%B9%BF%E5%9F%9F%E7%BD%91/" class="">3.5 局域网与广域网</a>
+  
+
+        </li>
+      
+    
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/" class="">第四章 网络层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/ip/" class="">4.1 IP地址</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95/" class="">4.2 路由算法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/" class="">4.3 路由协议</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/" class="">第五章 传输层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/udp/" class="">5.1 UDP协议</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/tcp/" class="">5.2 TCP协议</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/tcp_2/" class="">5.3 TCP流量、差错和可靠控制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/" class="">第六章 应用层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/dhcp/" class="">6.1 DHCP</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/dns/" class="active">6.2 DNS</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/ftp/" class="">6.3 FTP</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/" class="">6.4 E-mail</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/%E4%B8%87%E7%BB%B4%E7%BD%91/" class="">6.5 WWW</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_networking"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_networking/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>6.2 DNS</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_networking/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#域名命名规则">域名命名规则</a></li>
+    <li><a href="#域名服务器">域名服务器</a></li>
+    <li><a href="#域名解析过程">域名解析过程</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="域名系统dns">
+  域名系统DNS
+  <a class="anchor" href="#%e5%9f%9f%e5%90%8d%e7%b3%bb%e7%bb%9fdns">#</a>
+</h1>
+<p>访问Web服务器（测试连通性命令：<code>ping</code>），经典的就是浏览器输入网址-得到网页的过程</p>
+<p>Domain Name System, DNS 是一种命名系统，和IP地址对应，便于记忆</p>
+<p>层次域名：一个DNS服务器显然装不下那么多的域名，所以是分层次的</p>
+<h2 id="域名命名规则">
+  域名命名规则
+  <a class="anchor" href="#%e5%9f%9f%e5%90%8d%e5%91%bd%e5%90%8d%e8%a7%84%e5%88%99">#</a>
+</h2>
+<p>层次树状域名结构：低级在左，顶级在右</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230625203753041.png" alt="image-20230625203753041" /></p>
+<p>各级域名交由上一级的域名管理机构管理，最高的由<code>ICANN</code>管理</p>
+<p>顶级域名<code>TLD</code>主要有三类：</p>
+<ul>
+<li>国家地区：<code>.cn</code>, <code>.uk</code>, <code>.hk</code> 等等</li>
+<li>通用顶级域名：<code>.com</code> 公司，<code>.org</code> 非盈利组织，<code>.gov</code>政府 等等</li>
+<li>基础结构域名：只有一个<code>arpa</code>，用于反向域名解析，IP地址反向解析为域名</li>
+</ul>
+<p>国家下面的就由国家自己管理，名称相等的等级未必相同</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230611192152640.png" alt="image-20230611192152640" style="zoom:67%;" />
+<h2 id="域名服务器">
+  域名服务器
+  <a class="anchor" href="#%e5%9f%9f%e5%90%8d%e6%9c%8d%e5%8a%a1%e5%99%a8">#</a>
+</h2>
+<p>服务器进行域名解析，一个服务器的管辖范围称之为<code>区</code></p>
+<ul>
+<li>根域名服务器：知道所有顶级域名服务器IP地址，因特网上有13“个”（实际是服务器集群），它不直接解析，而是返回所属顶级域名服务器的IP地址</li>
+<li>顶级域名服务器：管理在其上注册的所有二级域名</li>
+<li>权限域名服务器：管理某个区的域名，主机的域名在这里登记，这里有域名和IP地址的映射关系</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230625205542454.png" alt="image-20230625205542454" /></p>
+<p><code>本地域名服务器</code>（默认）：本机的报文首先送往本地域名服务器，它起到代理的作用，将报文转发到上面等级结构中</p>
+<h2 id="域名解析过程">
+  域名解析过程
+  <a class="anchor" href="#%e5%9f%9f%e5%90%8d%e8%a7%a3%e6%9e%90%e8%bf%87%e7%a8%8b">#</a>
+</h2>
+<div class="book-columns flex flex-wrap">
+
+  <div class="flex-even markdown-inner">
+    <!-- begin columns block -->
+<h3 id="递归查询">
+  递归查询
+  <a class="anchor" href="#%e9%80%92%e5%bd%92%e6%9f%a5%e8%af%a2">#</a>
+</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230625210036246.png" alt="image-20230625210036246" />
+  </div>
+
+  <div class="flex-even markdown-inner">
+    <!-- magic separator, between columns -->
+<h3 id="迭代查询">
+  迭代查询
+  <a class="anchor" href="#%e8%bf%ad%e4%bb%a3%e6%9f%a5%e8%af%a2">#</a>
+</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230625210232448.png" alt="image-20230625210232448" />
+  </div>
+
+</div>
+
+<p>一般是，主机以递归方式向本地服务器查询（因为之间可能也是有转发的），本地服务器以迭代方式向根服务器查询，服务器给出答案或者找答案的地方</p>
+<p>同时，每个DNS服务器上有高速缓存，方便快速查找</p>
+<p>DNS报文使用UDP服务</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#域名命名规则">域名命名规则</a></li>
+    <li><a href="#域名服务器">域名服务器</a></li>
+    <li><a href="#域名解析过程">域名解析过程</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

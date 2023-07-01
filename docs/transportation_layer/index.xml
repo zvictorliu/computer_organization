@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>第五章 传输层 on Computer Networking</title>
+    <link>https://zvictorliu.github.io/computer_networking/transportation_layer/</link>
+    <description>Recent content in 第五章 传输层 on Computer Networking</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://zvictorliu.github.io/computer_networking/transportation_layer/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>5.1 UDP协议</title>
+      <link>https://zvictorliu.github.io/computer_networking/transportation_layer/udp/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_networking/transportation_layer/udp/</guid>
+      <description>UDP协议#适合一次性传输较少数据，虽然通信不可靠但是应用层还是有可靠性机制的
+面向报文：不对传下来的应用层报文处理（而TCP会拆分），保留边界
+应用层报文不可分割，是UDP数据报处理的最小单位
+UDP适合一次性传输少量数据、对可靠性要求不高的场景
+报文格式#首部+数据：
+其中校验和可选，不用时全为0，用来检查是否出错
+根据目的端口号找应用进程，找不到就丢弃，由ICMP发送不可达报文给发送端
+校验#虽说可靠性机制在应用层，但校验还是UDP协议要做的，即宁差勿错
+计算方法有点复杂。。。</description>
+    </item>
+    
+    <item>
+      <title>5.2 TCP协议</title>
+      <link>https://zvictorliu.github.io/computer_networking/transportation_layer/tcp/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_networking/transportation_layer/tcp/</guid>
+      <description>TCP协议#TCP面向字节流，将应用层传下来的数据看成一串字节流，但是在发送时是从缓存中去一部分（字节单位）加上首部构成TCP报文发送出去的
+报文格式#首部格式：
+源端口号和目的端口号标识各自的应用进程
+序号：增加到最后一个时下一个又从0开始，它指出的是本报文段中数据的第一个字节的序号（而不是报文的序号）
+确认号：表示序号n之前的数据都已正确接收，期望接收序号为n的数据（ACK字段取为1表示确认号字段有效）
+数据偏移：表示首部的长度（首部是可扩展的），也告诉了数据部分的起始处
+窗口：用于流量控制
+连接管理#三个要求：
+双方要知道对方的存在 双方需要协商某些参数 对运输实体资源分配 建立#需要三次握手：
+客户机向服务器发送请求报文段
+SYN=1表示是一个连接请求，不携带数据但仍然消耗一个数据号
+服务器收到，同意，发回确认（同时分配缓存和变量）
+SYN=1表示这是一个同意，ACK=1表示确认字段有效，ack=x+1表示正常
+客户机收到后，再向服务器发出确认（并分配缓存） ，服务器收到后就进入已连接状态，不再确认了
+ACK=1表示有效，ack=y+1表示正常，seq=x+1，但此时如果不携带数据就不消耗
+注意，确认号和确认位不一样，确认位只有0和1，表示确认号是否有效的；这里面SYN位表示是前两次握手需要对方确认，ACK表示在确认
+第三次握手的必要性：防止已经失效的连接请求报文段突然到达服务器，如果仅第二次握手服务器就进入ESTABLISHED状态的话就会一直空等数据
+释放#四次挥手，双方都能主动释放，但我们还是以客户主动释放来学
+客户发送关闭请求后，关闭这方的数据发送 服务器收到后关闭数据接收，并发送确认（此时服务器仍然能向客户发送数据） 等到服务器觉得没有数据要发送了，再次发送确认，表示今后不会再发数据过来了 客户端收到后再确认，服务器收到后完全关闭 ，而客户端是定时后才完全关闭 更高级的，如果客户端发生故障，服务器也有保活计时器确保不会一直等下去</description>
+    </item>
+    
+    <item>
+      <title>5.3 TCP流量、差错和可靠控制</title>
+      <link>https://zvictorliu.github.io/computer_networking/transportation_layer/tcp_2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_networking/transportation_layer/tcp_2/</guid>
+      <description>TCP流量、差错和可靠#可靠传输#发送方将缓冲区内发送窗口中的数据发送出去，得到确认的数据进行删除，在还没有得到确认的情况下，发送方可将窗口内的全部数据都依次发送出去，收到确认后，窗口后沿向前移动（而前沿取决于拥塞窗口和接收窗口的大小）
+重传：发送了一个报文后就有一个超时重传计时器，当发送窗口内都已发送后不能再发送，等待确认或者超时；而为了快速重传则是冗余ACK机制
+接收方收到的数据存入缓存区的接收窗口，只对按序接收的最高序号进行确认（累积确认，不是一个个确认），如果有不按序要等缺少的收到后再交给上层
+注意接收的TCP数据报往往不可能是只有一个字节数据，只是书上方便演示而已，所以实际是成段接收成段丢失，确认是每收到一段后发送的
+对于同时双向发送数据时，ACK是可以捎带在数据里的
+流量控制#基于滑动窗口机制，接收方控制发送方的速率
+一般是，接收方的确认信息中告知接收窗口的大小，发送方收到后移动窗口并调整大小（一般不建议让窗口缩小到把已经发送的也排除在外了，此外发送窗口是取接收窗口和拥塞窗口的最小值）
+此时发送方一方面滑动窗口另一方面窗口大小也要变化
+补充：有可能窗口为0后，再修改窗口时的报文丢失，造成死锁，于是有一个持续计时器，进行0窗口探测
+拥塞控制#拥塞： 对资源的需求超过了能提供的可用部分，是一个全局的状况
+拥塞窗口由发送方动态维护
+讨论时一般以最大报文段MSS为单位
+慢开始算法#传输轮次：完成一次窗口传输并得到确认
+在未达到慢开始门限值ssthresh之前，发送窗口值swnd和拥塞窗口cwnd值取一样，每收到一个报文段确认就把拥塞窗口值+1，所以刚开始是指数增长
+达到ssthresh之后，改用拥塞避免算法
+拥塞避免算法#每个传输轮次后加一，此时是线性增长
+当发生丢失时造成超时重传后，网络可能发送拥塞，于是此时应减小窗口：
+将ssthresh更新为发生拥塞时的cwnd的一半 将cwnd取为1，再次执行慢开始算法，重头再来 但是此时并不一定发生拥塞，发生了误解，所以有改进的快重传和快恢复
+快重传#冗余ACK，当发送方收到3个连续的重复确认就重传，不等超时重传计时器
+快恢复#收到3个重复确认即知道只是丢失个别，不启动慢开始算法，而执行快恢复算法：ssthresh还是取一半，cwnd取为ssthresh而不是从1开始（也可以适当扩大），然后执行拥塞避免算法</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="组帧#将数据封装成帧的意义在于，如果出错不必完全重新传所有数据
+组帧就是帧的封装，对上层传下来的信息进行封装，添加包含控制信息的帧头和帧尾
+传给物理层将帧转成比特流发送出去，而作为接收方要从比特流中提取出一个个帧，就需要帧头帧尾的控制信息，知道什么时候开始什么时候结束，这就是帧定界
+透明传输：数据链路层对上层传下来的数据没有任何限制，对于上层来说数据链路层是透明的; 如果数据中有部分和帧定界符意义，就会出现匹配错误，这样就叫对上层有限制了（不能包含和定界符相同的字段）
+为实现透明传输的方法：
+面向字节的物理链路：字符填充 面向比特的物理链路：比特填充 啥叫面向字节、面向比特？
+1 字符计数法#在帧的头部使用一个计数字段，表面帧内的字符数，从而确定帧的结束
+但是这样风险比较大，一个有错后面都错了
+2 字符填充法#在首尾添加特定的字符
+同时如果数据中有同样的字符，为了不误判，需要扫描一遍发现有同样特殊字符后就在其前面添加转义字符
+接收时扫到转义字符就知道这个不是数据并且后面也不是特殊字符
+如果有和转义字符一样的，也可以通过首次出现来辨别
+3 零比特填充#面向比特的协议中使用
+采用比特组合01111110来定界，对于数据中同样的部分：扫描，每出现5个连续的1就添加0
+接收方扫描，每出现5个连续的1就删除后面的0
+4 违规编码#在物理层编码时采用的不同于用作区分01的其它编码方式
+比如在曼彻斯特编码中：高to低表示1，低to高表示0，那么就可以用高to高表示开始，低to低表示结束
+这样就不需要填充了
+前提是编码方式有冗余">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="3.1 帧的封装" />
+<meta property="og:description" content="组帧#将数据封装成帧的意义在于，如果出错不必完全重新传所有数据
+组帧就是帧的封装，对上层传下来的信息进行封装，添加包含控制信息的帧头和帧尾
+传给物理层将帧转成比特流发送出去，而作为接收方要从比特流中提取出一个个帧，就需要帧头帧尾的控制信息，知道什么时候开始什么时候结束，这就是帧定界
+透明传输：数据链路层对上层传下来的数据没有任何限制，对于上层来说数据链路层是透明的; 如果数据中有部分和帧定界符意义，就会出现匹配错误，这样就叫对上层有限制了（不能包含和定界符相同的字段）
+为实现透明传输的方法：
+面向字节的物理链路：字符填充 面向比特的物理链路：比特填充 啥叫面向字节、面向比特？
+1 字符计数法#在帧的头部使用一个计数字段，表面帧内的字符数，从而确定帧的结束
+但是这样风险比较大，一个有错后面都错了
+2 字符填充法#在首尾添加特定的字符
+同时如果数据中有同样的字符，为了不误判，需要扫描一遍发现有同样特殊字符后就在其前面添加转义字符
+接收时扫到转义字符就知道这个不是数据并且后面也不是特殊字符
+如果有和转义字符一样的，也可以通过首次出现来辨别
+3 零比特填充#面向比特的协议中使用
+采用比特组合01111110来定界，对于数据中同样的部分：扫描，每出现5个连续的1就添加0
+接收方扫描，每出现5个连续的1就删除后面的0
+4 违规编码#在物理层编码时采用的不同于用作区分01的其它编码方式
+比如在曼彻斯特编码中：高to低表示1，低to高表示0，那么就可以用高to高表示开始，低to低表示结束
+这样就不需要填充了
+前提是编码方式有冗余" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_networking/data_link_layer/%E7%BB%84%E5%B8%A7/" /><meta property="article:section" content="data_link_layer" />
+
+
+<title>3.1 帧的封装 | Computer Networking</title>
+<link rel="manifest" href="/computer_networking/manifest.json">
+<link rel="icon" href="/computer_networking/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_networking/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_networking/flexsearch.min.js"></script>
+  <script defer src="/computer_networking/en.search.min.0444688c1bdbd11b09443fd6f9ef10410202522d71f5e3a0ace21499bb86a827.js" integrity="sha256-BERojBvb0RsJRD/W&#43;e8QQQICUi1x9eOgrOIUmbuGqCc=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_networking/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/3d-wifi.png" alt="Logo" /><span>Computer Networking</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/" class="">第一章 序章</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/%E8%AE%A1%E7%BD%91%E6%A6%82%E8%BF%B0/" class="">1.1 计网概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" class="">1.2 层次化体系结构</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/" class="">第二章 物理层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/%E9%80%9A%E4%BF%A1%E5%9F%BA%E7%A1%80/" class="">2.1 通信基础知识</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/%E4%BA%A4%E6%8D%A2/" class="">2.2 交换方式</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/" class="">第三章 数据链路层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E7%BB%84%E5%B8%A7/" class="active">3.1 帧的封装</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%B7%AE%E9%94%99%E6%8E%A7%E5%88%B6/" class="">3.2 差错控制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93/" class="">3.3 可靠传输机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E4%BB%8B%E8%B4%A8%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6/" class="">3.4 介质访问控制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8E%E5%B9%BF%E5%9F%9F%E7%BD%91/" class="">3.5 局域网与广域网</a>
+  
+
+        </li>
+      
+    
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/" class="">第四章 网络层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/ip/" class="">4.1 IP地址</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95/" class="">4.2 路由算法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/" class="">4.3 路由协议</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/" class="">第五章 传输层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/udp/" class="">5.1 UDP协议</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/tcp/" class="">5.2 TCP协议</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/tcp_2/" class="">5.3 TCP流量、差错和可靠控制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/" class="">第六章 应用层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/dhcp/" class="">6.1 DHCP</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/dns/" class="">6.2 DNS</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/ftp/" class="">6.3 FTP</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/" class="">6.4 E-mail</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/%E4%B8%87%E7%BB%B4%E7%BD%91/" class="">6.5 WWW</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_networking"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_networking/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>3.1 帧的封装</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_networking/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-字符计数法">1 字符计数法</a></li>
+    <li><a href="#2-字符填充法">2 字符填充法</a></li>
+    <li><a href="#3-零比特填充">3 零比特填充</a></li>
+    <li><a href="#4-违规编码">4 违规编码</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="组帧">
+  组帧
+  <a class="anchor" href="#%e7%bb%84%e5%b8%a7">#</a>
+</h1>
+<p>将数据封装成帧的意义在于，如果出错不必完全重新传所有数据</p>
+<p>组帧就是帧的封装，对上层传下来的信息进行封装，添加包含控制信息的帧头和帧尾</p>
+<p>传给物理层将帧转成比特流发送出去，而作为接收方要从比特流中提取出一个个帧，就需要帧头帧尾的控制信息，知道什么时候开始什么时候结束，这就是<code>帧定界</code></p>
+<p>透明传输：数据链路层对上层传下来的数据没有任何限制，对于上层来说数据链路层是透明的; <em>如果数据中有部分和帧定界符意义，就会出现匹配错误，这样就叫对上层有限制了（不能包含和定界符相同的字段）</em></p>
+<p>为实现透明传输的方法：</p>
+<ul>
+<li>面向字节的物理链路：字符填充</li>
+<li>面向比特的物理链路：比特填充</li>
+</ul>
+<p><del>啥叫面向字节、面向比特？</del></p>
+<h2 id="1-字符计数法">
+  1 字符计数法
+  <a class="anchor" href="#1-%e5%ad%97%e7%ac%a6%e8%ae%a1%e6%95%b0%e6%b3%95">#</a>
+</h2>
+<p>在帧的头部使用一个计数字段，表面帧内的字符数，从而确定帧的结束</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618134011851.png" alt="image-20230618134011851" /></p>
+<p>但是这样风险比较大，一个有错后面都错了</p>
+<h2 id="2-字符填充法">
+  2 字符填充法
+  <a class="anchor" href="#2-%e5%ad%97%e7%ac%a6%e5%a1%ab%e5%85%85%e6%b3%95">#</a>
+</h2>
+<p>在首尾添加特定的字符</p>
+<p>同时如果数据中有同样的字符，为了不误判，需要扫描一遍发现有同样特殊字符后就在其前面添加转义字符</p>
+<p>接收时扫到转义字符就知道这个不是数据并且后面也不是特殊字符</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618134435813.png" alt="image-20230618134435813" /></p>
+<p>如果有和转义字符一样的，也可以通过首次出现来辨别</p>
+<h2 id="3-零比特填充">
+  3 零比特填充
+  <a class="anchor" href="#3-%e9%9b%b6%e6%af%94%e7%89%b9%e5%a1%ab%e5%85%85">#</a>
+</h2>
+<p>面向比特的协议中使用</p>
+<p>采用比特组合<code>01111110</code>来定界，对于数据中同样的部分：扫描，每出现5个连续的1就添加0</p>
+<p>接收方扫描，每出现5个连续的1就删除后面的0</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618134923711.png" alt="image-20230618134923711" /></p>
+<h2 id="4-违规编码">
+  4 违规编码
+  <a class="anchor" href="#4-%e8%bf%9d%e8%a7%84%e7%bc%96%e7%a0%81">#</a>
+</h2>
+<p>在物理层编码时采用的不同于用作区分01的其它编码方式</p>
+<p>比如在曼彻斯特编码中：高to低表示1，低to高表示0，那么就可以用高to高表示开始，低to低表示结束</p>
+<p>这样就不需要填充了</p>
+<p>前提是编码方式有冗余</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-字符计数法">1 字符计数法</a></li>
+    <li><a href="#2-字符填充法">2 字符填充法</a></li>
+    <li><a href="#3-零比特填充">3 零比特填充</a></li>
+    <li><a href="#4-违规编码">4 违规编码</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

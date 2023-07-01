@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>第二章 物理层 on Computer Networking</title>
+    <link>https://zvictorliu.github.io/computer_networking/physical_layer/</link>
+    <description>Recent content in 第二章 物理层 on Computer Networking</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://zvictorliu.github.io/computer_networking/physical_layer/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2.1 通信基础知识</title>
+      <link>https://zvictorliu.github.io/computer_networking/physical_layer/%E9%80%9A%E4%BF%A1%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_networking/physical_layer/%E9%80%9A%E4%BF%A1%E5%9F%BA%E7%A1%80/</guid>
+      <description>通信基础#首先需要了解一些基本概念，然后是著名的奈奎斯特定理和香农定理
+进一步讲编码、交换等计数
+一个典型的通信系统模型：
+基本概念#传输和交换方式#串行和并行传输，这个不必多说
+同步传输：先告诉对方我要发多少（曼彻斯特编码）
+异步传输：起始位和终止位
+全双工和半双工：也明白
+信道#信道是逻辑上的概念，代表一条通路
+传输媒体中可以有多条信道
+定理#奈奎斯特#香农#编码与调制#发送的消息，承载在数据之中，电磁表现为信号
+其中，信号源发出的原始电信号叫做基带信号，可分数字和模拟的
+转为数字信号叫编码，转为模拟信号叫调制
+码元：在时间域上，表示一个离散数值的基本波形
+数字型数据 to 数字信号#用什么样的数字信号表示0，用什么样的数字信号表示1
+同步问题：多个相同的码元，怎么区分得开；一般需要时钟同步信号
+曼彻斯特编码采用了跳变来表示，确保都存在跳变，把时钟结合在一起；以太网就是曼彻斯特编码，一般也就考这个
+差分Manchester编码：跳变表示时钟，是否发送变化表示0 1
+数字型数据 to 模拟信号#发送端调制，接收端解调，将01藏在正弦波当中：
+基本调制：
+模拟型数据 to 数字信号#PCM：采样、量化、编码
+模拟型数据 to 模拟信号#大概也是调制解调吧
+物理介质#传输介质不属于物理层！！！
+有导向性（通道）和非导向性（辐射）两种
+双绞线 同轴电缆 光纤 无线电波、微波、红外、激光等等 </description>
+    </item>
+    
+    <item>
+      <title>2.2 交换方式</title>
+      <link>https://zvictorliu.github.io/computer_networking/physical_layer/%E4%BA%A4%E6%8D%A2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_networking/physical_layer/%E4%BA%A4%E6%8D%A2/</guid>
+      <description>交换方式#电路交换#必须建立专用连接，而且通信期间一直占用的信息交换方式：
+明显效率不高
+报文交换#存储转发方式：先发到中间设备，中间设备收到后再进行下一步转发
+无论大小
+分组交换#分组：将较长的数据分成小段，每段加上首部，构成一个个分组，放到这样的网络上传输：
+这里面每个分组并不一定是同样的路径
+细节问题就有：差错、顺序等等
+任意两个节点通信是电路交换的
+对比三种：
+对于分组交换，有面向连接的虚电路和无连接的数据报方式：
+数据报方式#简单来说就是发送到不同的交换设备上，最后到达顺序和发送顺序可能不一样，而且甚至有些包还送不到
+虚电路方式#建立一条逻辑上相连的虚电路
+先呼叫，找到目标，然后原路呼叫回去，便建立一条逻辑通路，这样其实就是固定了一条路，同时是非占用的
+释放也是呼叫两次</description>
+    </item>
+    
+  </channel>
+</rss>

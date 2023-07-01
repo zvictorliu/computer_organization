@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="应用层#解决应用进程的交互来实现特定的网络应用的问题
+这里就是学经典的网络应用及使用的应用协议
+网络应用模型#网络应用程序通过彼此的通信共同完成某项任务，于是，开发一种新的网络应用程序应该考虑其在各自端系统的组织方式和之间的关系
+客观-服务器方式 C/S#描述服务和被服务的关系，客户请求，服务器提供服务：
+对等方式 P2P#没有中心服务器，或者说每个主机同时是客户机和服务器，直接相互通信(任意一对叫Peer)
+比如Bittorrent、电驴这些就是基于P2P的，下载速度快
+服务分散在多个计算机中
+获取服务的同时也提供服务">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="第六章 应用层" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_networking/application_layer/" />
+<title>第六章 应用层 | Computer Networking</title>
+<link rel="manifest" href="/computer_networking/manifest.json">
+<link rel="icon" href="/computer_networking/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_networking/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_networking/flexsearch.min.js"></script>
+  <script defer src="/computer_networking/en.search.min.0444688c1bdbd11b09443fd6f9ef10410202522d71f5e3a0ace21499bb86a827.js" integrity="sha256-BERojBvb0RsJRD/W&#43;e8QQQICUi1x9eOgrOIUmbuGqCc=" crossorigin="anonymous"></script>
+<link rel="alternate" type="application/rss+xml" href="https://zvictorliu.github.io/computer_networking/application_layer/index.xml" title="Computer Networking" />
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_networking/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/3d-wifi.png" alt="Logo" /><span>Computer Networking</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/" class="">第一章 序章</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/%E8%AE%A1%E7%BD%91%E6%A6%82%E8%BF%B0/" class="">1.1 计网概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" class="">1.2 层次化体系结构</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/" class="">第二章 物理层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/%E9%80%9A%E4%BF%A1%E5%9F%BA%E7%A1%80/" class="">2.1 通信基础知识</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/%E4%BA%A4%E6%8D%A2/" class="">2.2 交换方式</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/" class="">第三章 数据链路层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E7%BB%84%E5%B8%A7/" class="">3.1 帧的封装</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%B7%AE%E9%94%99%E6%8E%A7%E5%88%B6/" class="">3.2 差错控制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93/" class="">3.3 可靠传输机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E4%BB%8B%E8%B4%A8%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6/" class="">3.4 介质访问控制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8E%E5%B9%BF%E5%9F%9F%E7%BD%91/" class="">3.5 局域网与广域网</a>
+  
+
+        </li>
+      
+    
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/" class="">第四章 网络层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/ip/" class="">4.1 IP地址</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95/" class="">4.2 路由算法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/" class="">4.3 路由协议</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/" class="">第五章 传输层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/udp/" class="">5.1 UDP协议</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/tcp/" class="">5.2 TCP协议</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/tcp_2/" class="">5.3 TCP流量、差错和可靠控制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/" class="active">第六章 应用层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/dhcp/" class="">6.1 DHCP</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/dns/" class="">6.2 DNS</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/ftp/" class="">6.3 FTP</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/" class="">6.4 E-mail</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/%E4%B8%87%E7%BB%B4%E7%BD%91/" class="">6.5 WWW</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_networking"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_networking/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>第六章 应用层</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_networking/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#网络应用模型">网络应用模型</a>
+      <ul>
+        <li><a href="#客观-服务器方式-cs">客观-服务器方式 C/S</a></li>
+        <li><a href="#对等方式-p2p">对等方式 P2P</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="应用层">
+  应用层
+  <a class="anchor" href="#%e5%ba%94%e7%94%a8%e5%b1%82">#</a>
+</h1>
+<blockquote>
+<p>解决应用进程的交互来实现特定的网络应用的问题</p>
+</blockquote>
+<p>这里就是学经典的网络应用及使用的应用协议</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618211139158.png" alt="image-20230618211139158" style="zoom:57%;" />
+<h2 id="网络应用模型">
+  网络应用模型
+  <a class="anchor" href="#%e7%bd%91%e7%bb%9c%e5%ba%94%e7%94%a8%e6%a8%a1%e5%9e%8b">#</a>
+</h2>
+<blockquote>
+<p>网络应用程序通过彼此的通信共同完成某项任务，于是，开发一种新的网络应用程序应该考虑其在各自端系统的组织方式和之间的关系</p>
+</blockquote>
+<h3 id="客观-服务器方式-cs">
+  客观-服务器方式 C/S
+  <a class="anchor" href="#%e5%ae%a2%e8%a7%82-%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%96%b9%e5%bc%8f-cs">#</a>
+</h3>
+<p>描述服务和被服务的关系，客户请求，服务器提供服务：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230625195225087.png" alt="image-20230625195225087" style="zoom:60%;" />
+<h3 id="对等方式-p2p">
+  对等方式 P2P
+  <a class="anchor" href="#%e5%af%b9%e7%ad%89%e6%96%b9%e5%bc%8f-p2p">#</a>
+</h3>
+<p>没有中心服务器，或者说每个主机同时是客户机和服务器，直接相互通信(任意一对叫<code>Peer</code>)</p>
+<p>比如Bittorrent、电驴这些就是基于P2P的，下载速度快</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230625195516950.png" alt="image-20230625195516950" style="zoom:60%;" />
+<p>服务分散在多个计算机中</p>
+<p>获取服务的同时也提供服务</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230611191119745.png" alt="image-20230611191119745" /></p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#网络应用模型">网络应用模型</a>
+      <ul>
+        <li><a href="#客观-服务器方式-cs">客观-服务器方式 C/S</a></li>
+        <li><a href="#对等方式-p2p">对等方式 P2P</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

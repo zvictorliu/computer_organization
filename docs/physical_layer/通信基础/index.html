@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="通信基础#首先需要了解一些基本概念，然后是著名的奈奎斯特定理和香农定理
+进一步讲编码、交换等计数
+一个典型的通信系统模型：
+基本概念#传输和交换方式#串行和并行传输，这个不必多说
+同步传输：先告诉对方我要发多少（曼彻斯特编码）
+异步传输：起始位和终止位
+全双工和半双工：也明白
+信道#信道是逻辑上的概念，代表一条通路
+传输媒体中可以有多条信道
+定理#奈奎斯特#香农#编码与调制#发送的消息，承载在数据之中，电磁表现为信号
+其中，信号源发出的原始电信号叫做基带信号，可分数字和模拟的
+转为数字信号叫编码，转为模拟信号叫调制
+码元：在时间域上，表示一个离散数值的基本波形
+数字型数据 to 数字信号#用什么样的数字信号表示0，用什么样的数字信号表示1
+同步问题：多个相同的码元，怎么区分得开；一般需要时钟同步信号
+曼彻斯特编码采用了跳变来表示，确保都存在跳变，把时钟结合在一起；以太网就是曼彻斯特编码，一般也就考这个
+差分Manchester编码：跳变表示时钟，是否发送变化表示0 1
+数字型数据 to 模拟信号#发送端调制，接收端解调，将01藏在正弦波当中：
+基本调制：
+模拟型数据 to 数字信号#PCM：采样、量化、编码
+模拟型数据 to 模拟信号#大概也是调制解调吧
+物理介质#传输介质不属于物理层！！！
+有导向性（通道）和非导向性（辐射）两种
+双绞线 同轴电缆 光纤 无线电波、微波、红外、激光等等 ">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="2.1 通信基础知识" />
+<meta property="og:description" content="通信基础#首先需要了解一些基本概念，然后是著名的奈奎斯特定理和香农定理
+进一步讲编码、交换等计数
+一个典型的通信系统模型：
+基本概念#传输和交换方式#串行和并行传输，这个不必多说
+同步传输：先告诉对方我要发多少（曼彻斯特编码）
+异步传输：起始位和终止位
+全双工和半双工：也明白
+信道#信道是逻辑上的概念，代表一条通路
+传输媒体中可以有多条信道
+定理#奈奎斯特#香农#编码与调制#发送的消息，承载在数据之中，电磁表现为信号
+其中，信号源发出的原始电信号叫做基带信号，可分数字和模拟的
+转为数字信号叫编码，转为模拟信号叫调制
+码元：在时间域上，表示一个离散数值的基本波形
+数字型数据 to 数字信号#用什么样的数字信号表示0，用什么样的数字信号表示1
+同步问题：多个相同的码元，怎么区分得开；一般需要时钟同步信号
+曼彻斯特编码采用了跳变来表示，确保都存在跳变，把时钟结合在一起；以太网就是曼彻斯特编码，一般也就考这个
+差分Manchester编码：跳变表示时钟，是否发送变化表示0 1
+数字型数据 to 模拟信号#发送端调制，接收端解调，将01藏在正弦波当中：
+基本调制：
+模拟型数据 to 数字信号#PCM：采样、量化、编码
+模拟型数据 to 模拟信号#大概也是调制解调吧
+物理介质#传输介质不属于物理层！！！
+有导向性（通道）和非导向性（辐射）两种
+双绞线 同轴电缆 光纤 无线电波、微波、红外、激光等等 " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_networking/physical_layer/%E9%80%9A%E4%BF%A1%E5%9F%BA%E7%A1%80/" /><meta property="article:section" content="physical_layer" />
+
+
+<title>2.1 通信基础知识 | Computer Networking</title>
+<link rel="manifest" href="/computer_networking/manifest.json">
+<link rel="icon" href="/computer_networking/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_networking/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_networking/flexsearch.min.js"></script>
+  <script defer src="/computer_networking/en.search.min.0444688c1bdbd11b09443fd6f9ef10410202522d71f5e3a0ace21499bb86a827.js" integrity="sha256-BERojBvb0RsJRD/W&#43;e8QQQICUi1x9eOgrOIUmbuGqCc=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_networking/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/3d-wifi.png" alt="Logo" /><span>Computer Networking</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/" class="">第一章 序章</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/%E8%AE%A1%E7%BD%91%E6%A6%82%E8%BF%B0/" class="">1.1 计网概述</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/introduction/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" class="">1.2 层次化体系结构</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/" class="">第二章 物理层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/%E9%80%9A%E4%BF%A1%E5%9F%BA%E7%A1%80/" class="active">2.1 通信基础知识</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/physical_layer/%E4%BA%A4%E6%8D%A2/" class="">2.2 交换方式</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/" class="">第三章 数据链路层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E7%BB%84%E5%B8%A7/" class="">3.1 帧的封装</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%B7%AE%E9%94%99%E6%8E%A7%E5%88%B6/" class="">3.2 差错控制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93/" class="">3.3 可靠传输机制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E4%BB%8B%E8%B4%A8%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6/" class="">3.4 介质访问控制</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/data_link_layer/%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8E%E5%B9%BF%E5%9F%9F%E7%BD%91/" class="">3.5 局域网与广域网</a>
+  
+
+        </li>
+      
+    
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/" class="">第四章 网络层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/ip/" class="">4.1 IP地址</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95/" class="">4.2 路由算法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/network_layer/%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/" class="">4.3 路由协议</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/" class="">第五章 传输层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/udp/" class="">5.1 UDP协议</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/tcp/" class="">5.2 TCP协议</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/transportation_layer/tcp_2/" class="">5.3 TCP流量、差错和可靠控制</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/" class="">第六章 应用层</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/dhcp/" class="">6.1 DHCP</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/dns/" class="">6.2 DNS</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/ftp/" class="">6.3 FTP</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/%E7%94%B5%E5%AD%90%E9%82%AE%E4%BB%B6/" class="">6.4 E-mail</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_networking/application_layer/%E4%B8%87%E7%BB%B4%E7%BD%91/" class="">6.5 WWW</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_networking"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_networking/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>2.1 通信基础知识</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_networking/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#基本概念">基本概念</a>
+      <ul>
+        <li><a href="#传输和交换方式">传输和交换方式</a></li>
+        <li><a href="#信道">信道</a></li>
+      </ul>
+    </li>
+    <li><a href="#定理">定理</a>
+      <ul>
+        <li><a href="#奈奎斯特">奈奎斯特</a></li>
+        <li><a href="#香农">香农</a></li>
+      </ul>
+    </li>
+    <li><a href="#编码与调制">编码与调制</a>
+      <ul>
+        <li><a href="#数字型数据-to-数字信号">数字型数据 to 数字信号</a></li>
+        <li><a href="#数字型数据-to-模拟信号">数字型数据 to 模拟信号</a></li>
+        <li><a href="#模拟型数据-to-数字信号">模拟型数据 to 数字信号</a></li>
+        <li><a href="#模拟型数据-to-模拟信号">模拟型数据 to 模拟信号</a></li>
+      </ul>
+    </li>
+    <li><a href="#物理介质">物理介质</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="通信基础">
+  通信基础
+  <a class="anchor" href="#%e9%80%9a%e4%bf%a1%e5%9f%ba%e7%a1%80">#</a>
+</h1>
+<p>首先需要了解一些基本概念，然后是著名的奈奎斯特定理和香农定理</p>
+<p>进一步讲编码、交换等计数</p>
+<p>一个典型的通信系统模型：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230610163210580.png" alt="image-20230610163210580" style="zoom:50%;" />
+<h2 id="基本概念">
+  基本概念
+  <a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">#</a>
+</h2>
+<h3 id="传输和交换方式">
+  传输和交换方式
+  <a class="anchor" href="#%e4%bc%a0%e8%be%93%e5%92%8c%e4%ba%a4%e6%8d%a2%e6%96%b9%e5%bc%8f">#</a>
+</h3>
+<p><em>串行和并行</em>传输，这个不必多说</p>
+<p><em>同步</em>传输：先告诉对方我要发多少（曼彻斯特编码）</p>
+<p><em>异步</em>传输：起始位和终止位</p>
+<p>全双工和半双工：也明白</p>
+<h3 id="信道">
+  信道
+  <a class="anchor" href="#%e4%bf%a1%e9%81%93">#</a>
+</h3>
+<p>信道是逻辑上的概念，代表一条通路</p>
+<p>传输媒体中可以有多条信道</p>
+<h2 id="定理">
+  定理
+  <a class="anchor" href="#%e5%ae%9a%e7%90%86">#</a>
+</h2>
+<h3 id="奈奎斯特">
+  奈奎斯特
+  <a class="anchor" href="#%e5%a5%88%e5%a5%8e%e6%96%af%e7%89%b9">#</a>
+</h3>
+<h3 id="香农">
+  香农
+  <a class="anchor" href="#%e9%a6%99%e5%86%9c">#</a>
+</h3>
+<h2 id="编码与调制">
+  编码与调制
+  <a class="anchor" href="#%e7%bc%96%e7%a0%81%e4%b8%8e%e8%b0%83%e5%88%b6">#</a>
+</h2>
+<p>发送的<code>消息</code>，承载在<code>数据</code>之中，电磁表现为<code>信号</code></p>
+<p>其中，信号源发出的原始电信号叫做<code>基带信号</code>，可分数字和模拟的</p>
+<p>转为数字信号叫编码，转为模拟信号叫调制</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618113828333.png" alt="image-20230618113828333" /></p>
+<p><code>码元</code>：在时间域上，表示一个离散数值的基本波形</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618114003764.png" alt="image-20230618114003764" /></p>
+<h3 id="数字型数据-to-数字信号">
+  数字型数据 to 数字信号
+  <a class="anchor" href="#%e6%95%b0%e5%ad%97%e5%9e%8b%e6%95%b0%e6%8d%ae-to-%e6%95%b0%e5%ad%97%e4%bf%a1%e5%8f%b7">#</a>
+</h3>
+<blockquote>
+<p>用什么样的数字信号表示0，用什么样的数字信号表示1</p>
+</blockquote>
+<p>同步问题：多个相同的码元，怎么区分得开；一般需要时钟同步信号</p>
+<p>曼彻斯特编码采用了跳变来表示，确保都存在跳变，把时钟结合在一起；以太网就是曼彻斯特编码，一般也就考这个</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618114531555.png" alt="image-20230618114531555" /></p>
+<p>差分Manchester编码：跳变表示时钟，是否发送变化表示0 1</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618114711339.png" alt="image-20230618114711339" /></p>
+<h3 id="数字型数据-to-模拟信号">
+  数字型数据 to 模拟信号
+  <a class="anchor" href="#%e6%95%b0%e5%ad%97%e5%9e%8b%e6%95%b0%e6%8d%ae-to-%e6%a8%a1%e6%8b%9f%e4%bf%a1%e5%8f%b7">#</a>
+</h3>
+<p>发送端调制，接收端解调，将01藏在正弦波当中：</p>
+<p>基本调制：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230618114922892.png" alt="image-20230618114922892" /></p>
+<h3 id="模拟型数据-to-数字信号">
+  模拟型数据 to 数字信号
+  <a class="anchor" href="#%e6%a8%a1%e6%8b%9f%e5%9e%8b%e6%95%b0%e6%8d%ae-to-%e6%95%b0%e5%ad%97%e4%bf%a1%e5%8f%b7">#</a>
+</h3>
+<p>PCM：采样、量化、编码</p>
+<h3 id="模拟型数据-to-模拟信号">
+  模拟型数据 to 模拟信号
+  <a class="anchor" href="#%e6%a8%a1%e6%8b%9f%e5%9e%8b%e6%95%b0%e6%8d%ae-to-%e6%a8%a1%e6%8b%9f%e4%bf%a1%e5%8f%b7">#</a>
+</h3>
+<p>大概也是调制解调吧</p>
+<h2 id="物理介质">
+  物理介质
+  <a class="anchor" href="#%e7%89%a9%e7%90%86%e4%bb%8b%e8%b4%a8">#</a>
+</h2>
+<p>传输介质不属于物理层！！！</p>
+<p>有导向性（通道）和非导向性（辐射）两种</p>
+<ul>
+<li>双绞线</li>
+<li>同轴电缆</li>
+<li>光纤</li>
+<li>无线电波、微波、红外、激光等等</li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#基本概念">基本概念</a>
+      <ul>
+        <li><a href="#传输和交换方式">传输和交换方式</a></li>
+        <li><a href="#信道">信道</a></li>
+      </ul>
+    </li>
+    <li><a href="#定理">定理</a>
+      <ul>
+        <li><a href="#奈奎斯特">奈奎斯特</a></li>
+        <li><a href="#香农">香农</a></li>
+      </ul>
+    </li>
+    <li><a href="#编码与调制">编码与调制</a>
+      <ul>
+        <li><a href="#数字型数据-to-数字信号">数字型数据 to 数字信号</a></li>
+        <li><a href="#数字型数据-to-模拟信号">数字型数据 to 模拟信号</a></li>
+        <li><a href="#模拟型数据-to-数字信号">模拟型数据 to 数字信号</a></li>
+        <li><a href="#模拟型数据-to-模拟信号">模拟型数据 to 模拟信号</a></li>
+      </ul>
+    </li>
+    <li><a href="#物理介质">物理介质</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

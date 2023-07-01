@@ -1,0 +1,37 @@
+baseURL = 'https://zvictorliu.github.io/computer_organization/'
+languageCode = 'zh-CN'
+title = 'Computer Organization'
+
+theme = 'book'
+
+[markup]
+ [markup.goldmark.renderer]
+  unsafe = true
+
+ [markup.tableOfContents]
+  startLevel = 2
+
+[menu]
+# [[menu.before]]
+[[menu.after]]
+  name = "Github"
+  url = "https://github.com/zvictorliu/computer_organization"
+  weight = 10
+
+[[menu.after]]
+  name = "Hugo Themes"
+  url = "https://themes.gohugo.io/hugo-book/"
+  weight = 20
+
+[params]
+	BookTheme = 'light'
+	BookToC = true
+	BookLogo = 'https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/computer_organization_logo.png'
+	BookRepo = 'https://github.com/zvictorliu/computer_organization'
+	BookSection = '*'
+
+	BookSearch = true
+	BookComments = true
+
+  BookCommitPath = 'commit'
+  BookDateFormat = 'January 2, 2006'
