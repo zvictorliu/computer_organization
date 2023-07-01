@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://zvictorliu.github.io/computer_organization/introduction/</loc>
+  </url><url>
+    <loc>https://zvictorliu.github.io/computer_organization/encode/</loc>
+  </url><url>
+    <loc>https://zvictorliu.github.io/computer_organization/storage/</loc>
+  </url><url>
+    <loc>https://zvictorliu.github.io/computer_organization/instructions/</loc>
+  </url><url>
+    <loc>https://zvictorliu.github.io/computer_organization/cpu/</loc>
+  </url><url>
+    <loc>https://zvictorliu.github.io/computer_organization/bus/</loc>
+  </url><url>
+    <loc>https://zvictorliu.github.io/computer_organization/io/</loc>
+  </url><url>
     <loc>https://zvictorliu.github.io/computer_organization/categories/</loc>
   </url><url>
     <loc>https://zvictorliu.github.io/computer_organization/tags/</loc>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="绪论#计算机系统#计算机系统=硬件&#43;软件，系统的性能主要由软件的效率表征，而软件的发挥与硬件有关
+软件与硬件在逻辑上等效，但硬件实现性能更好
+存储程序概念：指令以二进制形式送入主存，一旦启动就不需要人为干预，自动逐条执行指令
+冯·罗依曼体系结构：
+输入输出设备进行人识别信息-机器识别信息转换
+控制器执行指令的解析，运算器完成运算，指令和数据存放在存储器
+冯以运算器为中心，输入输出都需要经过运算器，影响了效率，所以现代计算机是以存储器为中心：
+CPU = 控制器&#43;运算器，主机不包含辅助存储器（外存是外设）
+层次结构#计算机系统的多级层次结构，上层看上去是在直接操控计算机
+微指令：理解为硬件的动作
+高级语言 - 汇编语言 - 机器语言
+汇编器：汇编到机器语言 编译器：高级到汇编，有些可以直接到机器语言 解释器：将语句逐条翻译为机器指令（类似同声传译）然后执行，是命令行式的，Python就是这样只不过是脚本的形式 PC存放下一条指令的地址，IR存放当前的指令，从PC到IR需要MDR（存放欲访问的内存地址——，MIR暂存读出来的指令
+性能指标#主存容量：MAR位数（存储单元个数）和MDR位数（存储单元大小）
+运算速度：
+CPU主频：主时钟信号频率 CPU时钟周期不同于CPU周期（机器周期） CPI, Clock cycle Per Instruction：一条指令需要多少个时钟周期（一般看平均） CPU执行时间 IPS, Instrutions Per Second：每秒执行多条指令 （MIPS，每秒多少百万条） FLOPS, Floating-point Operations Per Second：每秒多少浮点操作 吞吐量：单位时间处理请求的数量（每种请求每钟吞吐量 响应时间 数据通路带宽：数据总线一次能并行传输的信息位数
+字长：进行一次整数运算所处理的二进制数据位数，一般看通用寄存器
+机器字长就是计算机位数，不同于操作系统位数（寻址） 基准程序：跑分软件，跑相同的代码比较性能">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="第一章 绪论" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/introduction/" />
+<title>第一章 绪论 | Computer Organization</title>
+<link rel="manifest" href="/computer_organization/manifest.json">
+<link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_organization/flexsearch.min.js"></script>
+  <script defer src="/computer_organization/en.search.min.8da8ed82bda91dee05421bddd0ea52a9a12a1fd1e7ad20a211bfda528507f824.js" integrity="sha256-jajtgr2pHe4FQhvd0OpSqaEqH9HnrSCiEb/aUoUH&#43;CQ=" crossorigin="anonymous"></script>
+<link rel="alternate" type="application/rss+xml" href="https://zvictorliu.github.io/computer_organization/introduction/index.xml" title="Computer Organization" />
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_organization/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/computer_organization_logo.png" alt="Logo" /><span>Computer Organization</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/introduction/" class="active">第一章 绪论</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/" class="">第二章 编码</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/storage/" class="">第三章 存储系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/instructions/" class="">第四章 指令系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/cpu/" class="">第五章 中央处理器</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/" class="">第六章 总线</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/io/" class="">第七章 IO系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_organization"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>第一章 绪论</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_organization/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#计算机系统">计算机系统</a>
+      <ul>
+        <li><a href="#层次结构">层次结构</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能指标">性能指标</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="绪论">
+  绪论
+  <a class="anchor" href="#%e7%bb%aa%e8%ae%ba">#</a>
+</h1>
+<h2 id="计算机系统">
+  计算机系统
+  <a class="anchor" href="#%e8%ae%a1%e7%ae%97%e6%9c%ba%e7%b3%bb%e7%bb%9f">#</a>
+</h2>
+<p>计算机系统=硬件+软件，系统的性能主要由软件的效率表征，而软件的发挥与硬件有关</p>
+<p>软件与硬件在逻辑上等效，但硬件实现性能更好</p>
+<p><code>存储程序</code>概念：指令以二进制形式送入主存，一旦启动就不需要人为干预，自动逐条执行指令</p>
+<p>冯·罗依曼体系结构：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230701150815875.png" alt="image-20230701150815875" style="zoom: 70%;" />
+<p>输入输出设备进行人识别信息-机器识别信息转换</p>
+<p>控制器执行指令的解析，运算器完成运算，指令和数据存放在存储器</p>
+<p>冯以运算器为中心，输入输出都需要经过运算器，影响了效率，所以现代计算机是以存储器为中心：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230701151721071.png" alt="image-20230701151721071" style="zoom:80%;" />
+<p><em>CPU = 控制器+运算器，主机不包含辅助存储器（外存是外设）</em></p>
+<h3 id="层次结构">
+  层次结构
+  <a class="anchor" href="#%e5%b1%82%e6%ac%a1%e7%bb%93%e6%9e%84">#</a>
+</h3>
+<p>计算机系统的多级层次结构，上层看上去是在直接操控计算机</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230701153223913.png" alt="image-20230701153223913" style="zoom:80%;" />
+<p>微指令：理解为硬件的动作</p>
+<p>高级语言 - 汇编语言 - 机器语言</p>
+<ul>
+<li>汇编器：汇编到机器语言</li>
+<li>编译器：高级到汇编，有些可以直接到机器语言
+<ul>
+<li>解释器：将语句逐条翻译为机器指令（类似同声传译）然后执行，是命令行式的，Python就是这样只不过是脚本的形式</li>
+</ul>
+</li>
+</ul>
+<p><code>PC</code>存放下一条指令的地址，<code>IR</code>存放当前的指令，从<code>PC</code>到<code>IR</code>需要<code>MDR</code>（存放欲访问的内存地址——，<code>MIR</code>暂存读出来的指令</p>
+<h2 id="性能指标">
+  性能指标
+  <a class="anchor" href="#%e6%80%a7%e8%83%bd%e6%8c%87%e6%a0%87">#</a>
+</h2>
+<ul>
+<li>
+<p>主存容量：MAR位数（存储单元个数）和MDR位数（存储单元大小）</p>
+</li>
+<li>
+<p>运算速度：</p>
+<ul>
+<li>CPU主频：主时钟信号频率
+<ul>
+<li>CPU时钟周期不同于CPU周期（机器周期）</li>
+</ul>
+</li>
+<li>CPI, Clock cycle Per Instruction：一条指令需要多少个时钟周期（一般看平均）</li>
+<li>CPU执行时间
+<ul>
+<li>IPS, Instrutions Per Second：每秒执行多条指令 （MIPS，每秒多少百万条）</li>
+</ul>
+</li>
+<li>FLOPS, Floating-point Operations Per Second：每秒多少浮点操作</li>
+<li>吞吐量：单位时间处理请求的数量（每种请求每钟吞吐量</li>
+<li>响应时间</li>
+</ul>
+</li>
+<li>
+<p>数据通路带宽：数据总线一次能并行传输的信息位数</p>
+</li>
+<li>
+<p>字长：进行一次整数运算所处理的二进制数据位数，一般看通用寄存器</p>
+<ul>
+<li>机器字长就是计算机位数，不同于操作系统位数（寻址）</li>
+</ul>
+</li>
+<li>
+<p>基准程序：跑分软件，跑相同的代码比较性能</p>
+</li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#计算机系统">计算机系统</a>
+      <ul>
+        <li><a href="#层次结构">层次结构</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能指标">性能指标</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
