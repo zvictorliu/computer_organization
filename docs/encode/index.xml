@@ -6,5 +6,68 @@
     <description>Recent content in 第二章 编码 on Computer Organization</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language><atom:link href="https://zvictorliu.github.io/computer_organization/encode/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2.1 整数和定点小数编码</title>
+      <link>https://zvictorliu.github.io/computer_organization/encode/%E8%A1%A8%E7%A4%BA/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/encode/%E8%A1%A8%E7%A4%BA/</guid>
+      <description>整数和定点小数编码#无符号整数#​	机器字长决定位数上限
+​	减法运算：减数取反，末位加1后做加法
+带符号整数（定点整数）#原码与补码#原码：符号位+数值位
+​	表示范围和个数（0的两种）
+​	符号位不能参与运算，硬件电路很麻烦成本很高，所以发明了补码
+反码：中间状态
+​	负数：符号位不变，数值位取反
+补码：
+​	负数：反码末位+1
+手算的原码补码快速转换快速方法：从右往左第一个1的左边数值位取反
+补码计算#注意：负数的补码不表示权值，人类无法直接阅读
+加法：诸位相加即可，符号位也参与运算
+减法：取负（无论正负，全部位按位取反末位+1）（从右往左第一个1，左边全部位取反）
+​	这一点和无符号的减法是一致的，同一套电路即可实现
+特性对比#补码的表示范围：\( -2^n \sim 2^n -1 \)，因为补码形式下0只有一种形式：0,000000，而1,0000000表示 \(-2^n \)，但却没有对应的原码和反码，因此转换规则不使用（或者直接是按位取反溢出不舍弃）
+移码#补码的符号位取反，等价于\(x&amp;#43;2^n\)，所以其表示范围也是\( -2^n \sim 2^n -1 \)从小到达排列与无符号一致，使得比大小很方便，一般用于浮点数阶码表示，且只能表示整数
+定点小数#小数点位置固定为定点数（隐含的并不是真的空出来一位，根据相对位置确定），不固定为浮点数
+定点小数：纯小数，小数点在最高位之前
+定点整数：纯整数，小数点在最低位之前
+定点小数可以用原码、反码、补码表示，而不能用移码
+表示方法和计算和无符号也是一样的，表示范围看上去就是定点整数\(/2^n\)，在形式上完全一致，这就使得计算机的处理方式不变而只需要不同的理解</description>
+    </item>
+    
+    <item>
+      <title>2.2 浮点数</title>
+      <link>https://zvictorliu.github.io/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/</guid>
+      <description>浮点数#从科学计数法的思想而来
+表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
+尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
+规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
+左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#</description>
+    </item>
+    
+    <item>
+      <title>2.3 运算方法和电路</title>
+      <link>https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/</guid>
+      <description>运算方法和电路#运算部件#ALU：Arithmetic and Logic Unit，能进行加减运算、逻辑运算和一些移位、取补的操作（控制信号指明）
+门电路实现与或非
+优先级：与 &amp;gt; 或
+异或门实现加法运算
+宏观来看一个加法器应该是这样：
+电路实现#一位全加器 \[S_i = A_i \oplus B_i \oplus C_{i-1} \\C_i = A_i B_i &amp;#43; (A_i \oplus B_i)C_{i-1}\]电路设计↕串行进位全加器
+并行进位加法器
+对进位的公式进行了展开，发现了可以进行超前进位的特点，即：
+\(C_i\)只与 \(\{A_i\}\)，\(\{B_i\}\)和\(C_0\)有关
+一般定义 \(G_i = A_i B_i, \quad P_i = A_i \oplus B_i\)CLA部件实现对进位的超前计算，全先行进位加法器的组成：
+CLA部件的电路↕可发现位数越高电路越复杂，一般也就到4位带标志位的加法器
+定义了四个标志位：
+溢出标志OF：最高位的进位\(C_i\oplus\)次高位的进位\(C_{i-1}\)（只对于有符号数运算有意义） 符号标志SF: 即结果最高位，0表示为正，1为负 （只对于有符号数运算有意义） 进or借位标志CF: \(C_{out} \oplus C_{in}\)，即最高位进位和运算符(0为+)的异或 （无符号数有意义）是对无符号数判断是否溢出的标志，而有符号数是看OF 零标志ZF: 结果全为0时为1 移位#算术移位（有符号数）#用原码： 即改变位权，对于定点数无法改变小数点位置，所以是向左向右补零，相当于乘除2</description>
+    </item>
+    
   </channel>
 </rss>

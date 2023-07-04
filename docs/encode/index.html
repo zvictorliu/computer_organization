@@ -3,28 +3,10 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="数据的表示和运算#数制#进位计数
+<meta name="description" content="数据的表示和运算#进位计数
 进制转换：
 二进制与8进制、16进制（三位，四位一组） 10进制转： 整数部分：除K取余 小数部分：乘K取整 真值：带正负的数
-机器数：数字化后的真值
-无符号整数#​	机器字长决定位数上限
-​	减法运算：减数取反，末位加1后做加法
-带符号整数#原码与补码#原码：符号位&#43;数值位
-​	表示范围和个数（0的两种）
-​	符号位不能参与运算，硬件电路很麻烦成本很高，所以发明了补码
-反码：中间状态
-​	负数：符号位不变，数值位取反
-补码：
-​	负数：反码末位&#43;1
-手算的原码补码快速转换快速方法：从右往左第一个1的坐标数值位取反
-补码计算#注意：负数的补码不表示权值，人类无法直接阅读
-加法：诸位相加即可，符号位也参与运算
-减法：取负（无论正负，全部位按位取反末位&#43;1）（从右往左第一个1，左边全部位取反）
-​	这一点和无符号的减法是一致的，同一套电路即可实现
-特性对比#定点数#小数点位置固定为定点数（隐含，根据相对位置确定），不固定为浮点数
-定点小数：纯小数，小数点在最高位之前
-定点整数：纯整数，小数点在最低位之前
-浮点数#">
+机器数：数字化后的真值">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="第二章 编码" />
 <meta property="og:description" content="" />
@@ -35,7 +17,7 @@
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/computer_organization/flexsearch.min.js"></script>
-  <script defer src="/computer_organization/en.search.min.8da8ed82bda91dee05421bddd0ea52a9a12a1fd1e7ad20a211bfda528507f824.js" integrity="sha256-jajtgr2pHe4FQhvd0OpSqaEqH9HnrSCiEb/aUoUH&#43;CQ=" crossorigin="anonymous"></script>
+  <script defer src="/computer_organization/en.search.min.96b87492ba1b522562be2ec4de3c67d2ab6ef4b9c0f55d2576d26f42b19fc1fe.js" integrity="sha256-lrh0krobUiVivi7E3jxn0qtu9LnA9V0ldtJvQrGfwf4=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="https://zvictorliu.github.io/computer_organization/encode/index.xml" title="Computer Organization" />
 <!--
 Made with Book Theme
@@ -113,6 +95,45 @@ https://github.com/alex-shpak/hugo-book
 
           
   <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%A1%A8%E7%A4%BA/" class="">2.1 整数和定点小数编码</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
+  
+
+        </li>
+      
     
   </ul>
 
@@ -277,19 +298,7 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents">
-  <ul>
-    <li><a href="#数制">数制</a>
-      <ul>
-        <li><a href="#无符号整数">无符号整数</a></li>
-        <li><a href="#带符号整数">带符号整数</a></li>
-        <li><a href="#特性对比">特性对比</a></li>
-        <li><a href="#定点数">定点数</a></li>
-      </ul>
-    </li>
-    <li><a href="#浮点数">浮点数</a></li>
-  </ul>
-</nav>
+<nav id="TableOfContents"></nav>
 
 
 
@@ -304,10 +313,6 @@ https://github.com/alex-shpak/hugo-book
   数据的表示和运算
   <a class="anchor" href="#%e6%95%b0%e6%8d%ae%e7%9a%84%e8%a1%a8%e7%a4%ba%e5%92%8c%e8%bf%90%e7%ae%97">#</a>
 </h1>
-<h2 id="数制">
-  数制
-  <a class="anchor" href="#%e6%95%b0%e5%88%b6">#</a>
-</h2>
 <ul>
 <li>
 <p>进位计数</p>
@@ -331,51 +336,6 @@ https://github.com/alex-shpak/hugo-book
 <p>机器数：数字化后的真值</p>
 </li>
 </ul>
-<h3 id="无符号整数">
-  无符号整数
-  <a class="anchor" href="#%e6%97%a0%e7%ac%a6%e5%8f%b7%e6%95%b4%e6%95%b0">#</a>
-</h3>
-<p>​	机器字长决定位数上限</p>
-<p>​	减法运算：减数取反，末位加1后做加法</p>
-<h3 id="带符号整数">
-  带符号整数
-  <a class="anchor" href="#%e5%b8%a6%e7%ac%a6%e5%8f%b7%e6%95%b4%e6%95%b0">#</a>
-</h3>
-<h4 id="原码与补码">
-  原码与补码
-  <a class="anchor" href="#%e5%8e%9f%e7%a0%81%e4%b8%8e%e8%a1%a5%e7%a0%81">#</a>
-</h4>
-<p>原码：符号位+数值位</p>
-<p>​	表示范围和个数（0的两种）</p>
-<p>​	符号位不能参与运算，硬件电路很麻烦成本很高，所以发明了补码</p>
-<p>反码：中间状态</p>
-<p>​	负数：符号位不变，数值位取反</p>
-<p>补码：</p>
-<p>​	负数：反码末位+1</p>
-<p>手算的原码补码快速转换快速方法：从右往左第一个1的坐标数值位取反</p>
-<h4 id="补码计算">
-  补码计算
-  <a class="anchor" href="#%e8%a1%a5%e7%a0%81%e8%ae%a1%e7%ae%97">#</a>
-</h4>
-<p><em>注意：负数的补码不表示权值，人类无法直接阅读</em></p>
-<p>加法：诸位相加即可，符号位也参与运算</p>
-<p>减法：取负（无论正负，全部位按位取反末位+1）（从右往左第一个1，左边全部位取反）</p>
-<p>​	这一点和无符号的减法是一致的，同一套电路即可实现</p>
-<h3 id="特性对比">
-  特性对比
-  <a class="anchor" href="#%e7%89%b9%e6%80%a7%e5%af%b9%e6%af%94">#</a>
-</h3>
-<h3 id="定点数">
-  定点数
-  <a class="anchor" href="#%e5%ae%9a%e7%82%b9%e6%95%b0">#</a>
-</h3>
-<p>小数点位置固定为<code>定点数</code>（隐含，根据相对位置确定），不固定为<code>浮点数</code></p>
-<p>定点小数：纯小数，小数点在最高位之前</p>
-<p>定点整数：纯整数，小数点在最低位之前</p>
-<h2 id="浮点数">
-  浮点数
-  <a class="anchor" href="#%e6%b5%ae%e7%82%b9%e6%95%b0">#</a>
-</h2>
 </article>
  
       
@@ -415,19 +375,7 @@ https://github.com/alex-shpak/hugo-book
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents">
-  <ul>
-    <li><a href="#数制">数制</a>
-      <ul>
-        <li><a href="#无符号整数">无符号整数</a></li>
-        <li><a href="#带符号整数">带符号整数</a></li>
-        <li><a href="#特性对比">特性对比</a></li>
-        <li><a href="#定点数">定点数</a></li>
-      </ul>
-    </li>
-    <li><a href="#浮点数">浮点数</a></li>
-  </ul>
-</nav>
+<nav id="TableOfContents"></nav>
 
 
  

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="运算方法和电路#运算部件#ALU：Arithmetic and Logic Unit，能进行加减运算、逻辑运算和一些移位、取补的操作（控制信号指明）
+门电路实现与或非
+优先级：与 &gt; 或
+异或门实现加法运算
+宏观来看一个加法器应该是这样：
+电路实现#一位全加器 \[S_i = A_i \oplus B_i \oplus C_{i-1} \\C_i = A_i B_i &#43; (A_i \oplus B_i)C_{i-1}\]电路设计↕串行进位全加器
+并行进位加法器
+对进位的公式进行了展开，发现了可以进行超前进位的特点，即：
+\(C_i\)只与 \(\{A_i\}\)，\(\{B_i\}\)和\(C_0\)有关
+一般定义 \(G_i = A_i B_i, \quad P_i = A_i \oplus B_i\)CLA部件实现对进位的超前计算，全先行进位加法器的组成：
+CLA部件的电路↕可发现位数越高电路越复杂，一般也就到4位带标志位的加法器
+定义了四个标志位：
+溢出标志OF：最高位的进位\(C_i\oplus\)次高位的进位\(C_{i-1}\)（只对于有符号数运算有意义） 符号标志SF: 即结果最高位，0表示为正，1为负 （只对于有符号数运算有意义） 进or借位标志CF: \(C_{out} \oplus C_{in}\)，即最高位进位和运算符(0为&#43;)的异或 （无符号数有意义）是对无符号数判断是否溢出的标志，而有符号数是看OF 零标志ZF: 结果全为0时为1 移位#算术移位（有符号数）#用原码： 即改变位权，对于定点数无法改变小数点位置，所以是向左向右补零，相当于乘除2">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="2.3 运算方法和电路" />
+<meta property="og:description" content="运算方法和电路#运算部件#ALU：Arithmetic and Logic Unit，能进行加减运算、逻辑运算和一些移位、取补的操作（控制信号指明）
+门电路实现与或非
+优先级：与 &gt; 或
+异或门实现加法运算
+宏观来看一个加法器应该是这样：
+电路实现#一位全加器 \[S_i = A_i \oplus B_i \oplus C_{i-1} \\C_i = A_i B_i &#43; (A_i \oplus B_i)C_{i-1}\]电路设计↕串行进位全加器
+并行进位加法器
+对进位的公式进行了展开，发现了可以进行超前进位的特点，即：
+\(C_i\)只与 \(\{A_i\}\)，\(\{B_i\}\)和\(C_0\)有关
+一般定义 \(G_i = A_i B_i, \quad P_i = A_i \oplus B_i\)CLA部件实现对进位的超前计算，全先行进位加法器的组成：
+CLA部件的电路↕可发现位数越高电路越复杂，一般也就到4位带标志位的加法器
+定义了四个标志位：
+溢出标志OF：最高位的进位\(C_i\oplus\)次高位的进位\(C_{i-1}\)（只对于有符号数运算有意义） 符号标志SF: 即结果最高位，0表示为正，1为负 （只对于有符号数运算有意义） 进or借位标志CF: \(C_{out} \oplus C_{in}\)，即最高位进位和运算符(0为&#43;)的异或 （无符号数有意义）是对无符号数判断是否溢出的标志，而有符号数是看OF 零标志ZF: 结果全为0时为1 移位#算术移位（有符号数）#用原码： 即改变位权，对于定点数无法改变小数点位置，所以是向左向右补零，相当于乘除2" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/" /><meta property="article:section" content="encode" />
+
+
+<title>2.3 运算方法和电路 | Computer Organization</title>
+<link rel="manifest" href="/computer_organization/manifest.json">
+<link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_organization/flexsearch.min.js"></script>
+  <script defer src="/computer_organization/en.search.min.96b87492ba1b522562be2ec4de3c67d2ab6ef4b9c0f55d2576d26f42b19fc1fe.js" integrity="sha256-lrh0krobUiVivi7E3jxn0qtu9LnA9V0ldtJvQrGfwf4=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_organization/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/computer_organization_logo.png" alt="Logo" /><span>Computer Organization</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/introduction/" class="">第一章 绪论</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/" class="">第二章 编码</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%A1%A8%E7%A4%BA/" class="">2.1 整数和定点小数编码</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="active">2.3 运算方法和电路</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/storage/" class="">第三章 存储系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/instructions/" class="">第四章 指令系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/cpu/" class="">第五章 中央处理器</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/" class="">第六章 总线</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/io/" class="">第七章 IO系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_organization"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>2.3 运算方法和电路</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_organization/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#运算部件">运算部件</a>
+      <ul>
+        <li><a href="#电路实现">电路实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#移位">移位</a>
+      <ul>
+        <li><a href="#算术移位有符号数">算术移位（有符号数）</a></li>
+        <li><a href="#逻辑移位">逻辑移位</a></li>
+        <li><a href="#循环移位">循环移位</a></li>
+      </ul>
+    </li>
+    <li><a href="#补码加减">补码加减</a></li>
+    <li><a href="#乘除">乘除</a>
+      <ul>
+        <li><a href="#原码一位乘法">原码一位乘法</a></li>
+        <li><a href="#补码一位乘法">补码一位乘法</a></li>
+      </ul>
+    </li>
+    <li><a href="#c语言类型转换">C语言类型转换</a></li>
+    <li><a href="#存储和排列">存储和排列</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="运算方法和电路">
+  运算方法和电路
+  <a class="anchor" href="#%e8%bf%90%e7%ae%97%e6%96%b9%e6%b3%95%e5%92%8c%e7%94%b5%e8%b7%af">#</a>
+</h1>
+<h2 id="运算部件">
+  运算部件
+  <a class="anchor" href="#%e8%bf%90%e7%ae%97%e9%83%a8%e4%bb%b6">#</a>
+</h2>
+<p><code>ALU</code>：Arithmetic and Logic Unit，能进行加减运算、逻辑运算和一些移位、取补的操作（控制信号指明）</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702205005166.png" alt="image-20230702205005166" style="zoom:80%;"/>
+<p>门电路实现与或非</p>
+<p>优先级：与 &gt; 或</p>
+<p>异或门实现加法运算</p>
+<p>宏观来看一个加法器应该是这样：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704160232267.png" alt="image-20230704160232267" style="zoom:67%;" />
+<h3 id="电路实现">
+  电路实现
+  <a class="anchor" href="#%e7%94%b5%e8%b7%af%e5%ae%9e%e7%8e%b0">#</a>
+</h3>
+<p><strong>一位全加器</strong>
+
+<link rel="stylesheet" href="/computer_organization/katex/katex.min.css" />
+<script defer src="/computer_organization/katex/katex.min.js"></script>
+<script defer src="/computer_organization/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
+  \[
+S_i = A_i \oplus B_i \oplus C_{i-1} \\
+C_i = A_i B_i &#43; (A_i \oplus B_i)C_{i-1}\]
+</span>
+</p>
+
+<div class="book-expand">
+  <label>
+    <div class="book-expand-head flex justify-between">
+      <span>电路设计</span>
+      <span>↕</span>
+    </div>
+    <input type="checkbox" class="hidden" />
+    <div class="book-expand-content markdown-inner">
+      <img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702222005491.png" alt="image-20230702222005491" style="zoom:80%;" />
+    </div>
+  </label>
+</div>
+
+<p><strong>串行进位全加器</strong></p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702221927526.png" alt="image-20230702221927526" style="zoom:90%;" />
+<p><strong>并行进位加法器</strong></p>
+<p>对进位的公式进行了展开，发现了可以进行超前进位的特点，即：</p>
+<blockquote>
+<p><span>
+  \(C_i\)
+</span>
+ 只与 <span>
+  \(\{A_i\}\)
+</span>
+，<span>
+  \(\{B_i\}\)
+</span>
+和<span>
+  \(C_0\)
+</span>
+有关</p>
+<p>一般定义 <span>
+  \(G_i = A_i B_i, \quad P_i = A_i \oplus B_i\)
+</span>
+</p>
+</blockquote>
+<p><code>CLA</code>部件实现对进位的超前计算，全先行进位加法器的组成：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704155705232.png" alt="image-20230704155705232" style="zoom:80%;" />
+
+<div class="book-expand">
+  <label>
+    <div class="book-expand-head flex justify-between">
+      <span>CLA部件的电路</span>
+      <span>↕</span>
+    </div>
+    <input type="checkbox" class="hidden" />
+    <div class="book-expand-content markdown-inner">
+      <img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704155810400.png" alt="image-20230704155810400" style="zoom:80%;" />
+<p>可发现位数越高电路越复杂，一般也就到4位
+    </div>
+  </label>
+</div>
+
+<p><strong>带标志位的加法器</strong></p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704162324221.png" alt="image-20230704162324221" style="zoom:80%;"  align = "right"/>
+<p>定义了四个标志位：</p>
+<ul>
+<li>溢出标志<code>OF</code>：最高位的进位<span>
+  \(C_i\oplus\)
+</span>
+次高位的进位<span>
+  \(C_{i-1}\)
+</span>
+（只对于<u>有符号数</u>运算有意义）</li>
+<li>符号标志<code>SF</code>: 即结果最高位，0表示为正，1为负 （只对于<u>有符号数</u>运算有意义）</li>
+<li>进or借位标志<code>CF</code>: <span>
+  \(C_{out} \oplus C_{in}\)
+</span>
+，即最高位进位和运算符(0为+)的异或 （<u>无符号数</u>有意义）是对无符号数判断是否溢出的标志，而有符号数是看<code>OF</code></li>
+<li>零标志<code>ZF</code>: 结果全为0时为1</li>
+</ul>
+<h2 id="移位">
+  移位
+  <a class="anchor" href="#%e7%a7%bb%e4%bd%8d">#</a>
+</h2>
+<h3 id="算术移位有符号数">
+  算术移位（有符号数）
+  <a class="anchor" href="#%e7%ae%97%e6%9c%af%e7%a7%bb%e4%bd%8d%e6%9c%89%e7%ac%a6%e5%8f%b7%e6%95%b0">#</a>
+</h3>
+<ul>
+<li>用原码：</li>
+</ul>
+<p>即改变位权，对于定点数无法改变小数点位置，所以是向左向右补零，相当于乘除2</p>
+<p>当定点整数向右移动，舍弃的是1时就意味着舍弃了精度</p>
+<p>多想想这个表达式：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704164147947.png" alt="image-20230704164147947" /></p>
+<p>同样也适用于定点小数</p>
+<ul>
+<li>用反码：</li>
+</ul>
+<p>负数由于取反，补的是1</p>
+<ul>
+<li>用补码：</li>
+</ul>
+<p>负数，最右边的1右边和原码一致，左边和反码一致，左右移动补的是不一样</p>
+<p>总结：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704164650521.png" alt="image-20230704164650521" style="zoom:67%;" />
+<h3 id="逻辑移位">
+  逻辑移位
+  <a class="anchor" href="#%e9%80%bb%e8%be%91%e7%a7%bb%e4%bd%8d">#</a>
+</h3>
+<p>讲操作数视为无符号数进行算术移位</p>
+<h3 id="循环移位">
+  循环移位
+  <a class="anchor" href="#%e5%be%aa%e7%8e%af%e7%a7%bb%e4%bd%8d">#</a>
+</h3>
+<p>小循环：不带进位位<code>CF</code></p>
+<p>大循环：带上<code>CF</code>一起循环</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704165144395.png" alt="image-20230704165144395" style="zoom:80%;" />
+<h2 id="补码加减">
+  补码加减
+  <a class="anchor" href="#%e8%a1%a5%e7%a0%81%e5%8a%a0%e5%87%8f">#</a>
+</h2>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704162806860.png" alt="image-20230704162806860" style="zoom:80%;" />
+<p>多路选择器<code>MUX</code>，运算控制信号进行选择，当为减法时选择 <span>
+  \(\bar{Y}\)
+</span>
+ 然后进位 <span>
+  \(C_{in} = 1\)
+</span>
+，就实现了取反末位+1的处理</p>
+<p>同样也可以用于无符号的加减运算</p>
+<p>但是判断溢出的方法是不同的</p>
+<h2 id="乘除">
+  乘除
+  <a class="anchor" href="#%e4%b9%98%e9%99%a4">#</a>
+</h2>
+<h3 id="原码一位乘法">
+  原码一位乘法
+  <a class="anchor" href="#%e5%8e%9f%e7%a0%81%e4%b8%80%e4%bd%8d%e4%b9%98%e6%b3%95">#</a>
+</h3>
+<p>符号位单独处理：取异或</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704170242403.png" alt="image-20230704170242403" style="zoom:80%;" />
+<p>先加，然后逻辑右移，移到符号位为止</p>
+<p>符号位要修改，ACC和MQ当中处符号位之外的一起</p>
+<details open><summary>手算方式</summary>
+  <div class="markdown-inner">
+    <img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704171150783.png" alt="image-20230704171150783" style="zoom:80%;" />
+  </div>
+</details>
+
+<h3 id="补码一位乘法">
+  补码一位乘法
+  <a class="anchor" href="#%e8%a1%a5%e7%a0%81%e4%b8%80%e4%bd%8d%e4%b9%98%e6%b3%95">#</a>
+</h3>
+<p><code>Booth算法</code></p>
+<p>MQ多一位辅助位在最后，ACC和X多一个双符号位在前面</p>
+<h2 id="c语言类型转换">
+  C语言类型转换
+  <a class="anchor" href="#c%e8%af%ad%e8%a8%80%e7%b1%bb%e5%9e%8b%e8%bd%ac%e6%8d%a2">#</a>
+</h2>
+<h2 id="存储和排列">
+  存储和排列
+  <a class="anchor" href="#%e5%ad%98%e5%82%a8%e5%92%8c%e6%8e%92%e5%88%97">#</a>
+</h2>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#运算部件">运算部件</a>
+      <ul>
+        <li><a href="#电路实现">电路实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#移位">移位</a>
+      <ul>
+        <li><a href="#算术移位有符号数">算术移位（有符号数）</a></li>
+        <li><a href="#逻辑移位">逻辑移位</a></li>
+        <li><a href="#循环移位">循环移位</a></li>
+      </ul>
+    </li>
+    <li><a href="#补码加减">补码加减</a></li>
+    <li><a href="#乘除">乘除</a>
+      <ul>
+        <li><a href="#原码一位乘法">原码一位乘法</a></li>
+        <li><a href="#补码一位乘法">补码一位乘法</a></li>
+      </ul>
+    </li>
+    <li><a href="#c语言类型转换">C语言类型转换</a></li>
+    <li><a href="#存储和排列">存储和排列</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
