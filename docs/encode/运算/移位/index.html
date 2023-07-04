@@ -3,19 +3,38 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="存储系统#">
+<meta name="description" content="移位#算术移位（有符号数）#用原码： 即改变位权，对于定点数无法改变小数点位置，所以是向左向右补零，相当于乘除2
+当定点整数向右移动，舍弃的是1时就意味着舍弃了精度
+多想想这个表达式：
+同样也适用于定点小数
+用反码： 负数由于取反，补的是1
+用补码： 负数，最右边的1右边和原码一致，左边和反码一致，左右移动补的是不一样
+总结：
+逻辑移位#讲操作数视为无符号数进行算术移位
+循环移位#小循环：不带进位位CF
+大循环：带上CF一起循环">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="第三章 存储系统" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/storage/" />
-<title>第三章 存储系统 | Computer Organization</title>
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="" />
+<meta property="og:description" content="移位#算术移位（有符号数）#用原码： 即改变位权，对于定点数无法改变小数点位置，所以是向左向右补零，相当于乘除2
+当定点整数向右移动，舍弃的是1时就意味着舍弃了精度
+多想想这个表达式：
+同样也适用于定点小数
+用反码： 负数由于取反，补的是1
+用补码： 负数，最右边的1右边和原码一致，左边和反码一致，左右移动补的是不一样
+总结：
+逻辑移位#讲操作数视为无符号数进行算术移位
+循环移位#小循环：不带进位位CF
+大循环：带上CF一起循环" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/" /><meta property="article:section" content="encode" />
+
+
+<title>移位 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/computer_organization/flexsearch.min.js"></script>
   <script defer src="/computer_organization/en.search.min.d16d56f0eae2e3d6032ddf50766c505b9fd0c7b73313bfb65ed660f66bcc8107.js" integrity="sha256-0W1W8Ori49YDLd9QdmxQW5/Qx7czE7&#43;2XtZg9mvMgQc=" crossorigin="anonymous"></script>
-<link rel="alternate" type="application/rss+xml" href="https://zvictorliu.github.io/computer_organization/storage/index.xml" title="Computer Organization" />
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -126,7 +145,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle" checked />
     <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
       <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
     </label>
@@ -155,7 +174,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/" class="">移位</a>
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/" class="active">移位</a>
   
 
         </li>
@@ -204,7 +223,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/storage/" class="active">第三章 存储系统</a>
+    <a href="/computer_organization/storage/" class="">第三章 存储系统</a>
   
 
           
@@ -341,7 +360,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>第三章 存储系统</strong>
+  <strong>移位</strong>
 
   <label for="toc-control">
     
@@ -356,7 +375,17 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#移位">移位</a>
+      <ul>
+        <li><a href="#算术移位有符号数">算术移位（有符号数）</a></li>
+        <li><a href="#逻辑移位">逻辑移位</a></li>
+        <li><a href="#循环移位">循环移位</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 
 
@@ -367,11 +396,44 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="存储系统">
-  存储系统
-  <a class="anchor" href="#%e5%ad%98%e5%82%a8%e7%b3%bb%e7%bb%9f">#</a>
-</h1>
-</article>
+  <article class="markdown"><h2 id="移位">
+  移位
+  <a class="anchor" href="#%e7%a7%bb%e4%bd%8d">#</a>
+</h2>
+<h3 id="算术移位有符号数">
+  算术移位（有符号数）
+  <a class="anchor" href="#%e7%ae%97%e6%9c%af%e7%a7%bb%e4%bd%8d%e6%9c%89%e7%ac%a6%e5%8f%b7%e6%95%b0">#</a>
+</h3>
+<ul>
+<li>用原码：</li>
+</ul>
+<p>即改变位权，对于定点数无法改变小数点位置，所以是向左向右补零，相当于乘除2</p>
+<p>当定点整数向右移动，舍弃的是1时就意味着舍弃了精度</p>
+<p>多想想这个表达式：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704164147947.png" alt="image-20230704164147947" /></p>
+<p>同样也适用于定点小数</p>
+<ul>
+<li>用反码：</li>
+</ul>
+<p>负数由于取反，补的是1</p>
+<ul>
+<li>用补码：</li>
+</ul>
+<p>负数，最右边的1右边和原码一致，左边和反码一致，左右移动补的是不一样</p>
+<p>总结：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704164650521.png" alt="image-20230704164650521" style="zoom:67%;" />
+<h3 id="逻辑移位">
+  逻辑移位
+  <a class="anchor" href="#%e9%80%bb%e8%be%91%e7%a7%bb%e4%bd%8d">#</a>
+</h3>
+<p>讲操作数视为无符号数进行算术移位</p>
+<h3 id="循环移位">
+  循环移位
+  <a class="anchor" href="#%e5%be%aa%e7%8e%af%e7%a7%bb%e4%bd%8d">#</a>
+</h3>
+<p>小循环：不带进位位<code>CF</code></p>
+<p>大循环：带上<code>CF</code>一起循环</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704165144395.png" alt="image-20230704165144395" style="zoom:80%;" /></article>
  
       
 
@@ -449,7 +511,17 @@ code.has-jax {
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#移位">移位</a>
+      <ul>
+        <li><a href="#算术移位有符号数">算术移位（有符号数）</a></li>
+        <li><a href="#逻辑移位">逻辑移位</a></li>
+        <li><a href="#循环移位">循环移位</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 
  

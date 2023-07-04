@@ -3,19 +3,44 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="存储系统#">
+<meta name="description" content="乘法#原码一位乘法#符号位单独处理：取异或
+先加，然后逻辑右移，移到符号位为止
+符号位要修改，ACC和MQ当中处符号位之外的一起
+手算方式补码一位乘法#Booth算法
+MQ多一位辅助位在最后，ACC和X多一个双符号位在前面
+在最后还会再加一次
+在电路上，有专门的辅助电路帮助进行
+除法#原码-恢复余数法#取绝对值进行计算，符号位单独来
+设商为1，进行减法计算，发现为负值，恢复余数，改为0
+逻辑左移
+原码-加减交替法#补码-加减交替法#双符号位参与计算
+最后一位商恒置为1
+天，这里怎么可能记得住">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="第三章 存储系统" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/storage/" />
-<title>第三章 存储系统 | Computer Organization</title>
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="" />
+<meta property="og:description" content="乘法#原码一位乘法#符号位单独处理：取异或
+先加，然后逻辑右移，移到符号位为止
+符号位要修改，ACC和MQ当中处符号位之外的一起
+手算方式补码一位乘法#Booth算法
+MQ多一位辅助位在最后，ACC和X多一个双符号位在前面
+在最后还会再加一次
+在电路上，有专门的辅助电路帮助进行
+除法#原码-恢复余数法#取绝对值进行计算，符号位单独来
+设商为1，进行减法计算，发现为负值，恢复余数，改为0
+逻辑左移
+原码-加减交替法#补码-加减交替法#双符号位参与计算
+最后一位商恒置为1
+天，这里怎么可能记得住" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/%E4%B9%98%E9%99%A4/" /><meta property="article:section" content="encode" />
+
+
+<title>乘除 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/computer_organization/flexsearch.min.js"></script>
   <script defer src="/computer_organization/en.search.min.d16d56f0eae2e3d6032ddf50766c505b9fd0c7b73313bfb65ed660f66bcc8107.js" integrity="sha256-0W1W8Ori49YDLd9QdmxQW5/Qx7czE7&#43;2XtZg9mvMgQc=" crossorigin="anonymous"></script>
-<link rel="alternate" type="application/rss+xml" href="https://zvictorliu.github.io/computer_organization/storage/index.xml" title="Computer Organization" />
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -126,7 +151,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle" checked />
     <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
       <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
     </label>
@@ -168,7 +193,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E4%B9%98%E9%99%A4/" class="">乘除</a>
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E4%B9%98%E9%99%A4/" class="active">乘除</a>
   
 
         </li>
@@ -204,7 +229,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/storage/" class="active">第三章 存储系统</a>
+    <a href="/computer_organization/storage/" class="">第三章 存储系统</a>
   
 
           
@@ -341,7 +366,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>第三章 存储系统</strong>
+  <strong>乘除</strong>
 
   <label for="toc-control">
     
@@ -356,7 +381,23 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#乘法">乘法</a>
+      <ul>
+        <li><a href="#原码一位乘法">原码一位乘法</a></li>
+        <li><a href="#补码一位乘法">补码一位乘法</a></li>
+      </ul>
+    </li>
+    <li><a href="#除法">除法</a>
+      <ul>
+        <li><a href="#原码-恢复余数法">原码-恢复余数法</a></li>
+        <li><a href="#原码-加减交替法">原码-加减交替法</a></li>
+        <li><a href="#补码-加减交替法">补码-加减交替法</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 
 
@@ -367,10 +408,57 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="存储系统">
-  存储系统
-  <a class="anchor" href="#%e5%ad%98%e5%82%a8%e7%b3%bb%e7%bb%9f">#</a>
-</h1>
+  <article class="markdown"><h2 id="乘法">
+  乘法
+  <a class="anchor" href="#%e4%b9%98%e6%b3%95">#</a>
+</h2>
+<h3 id="原码一位乘法">
+  原码一位乘法
+  <a class="anchor" href="#%e5%8e%9f%e7%a0%81%e4%b8%80%e4%bd%8d%e4%b9%98%e6%b3%95">#</a>
+</h3>
+<p>符号位单独处理：取异或</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704170242403.png" alt="image-20230704170242403" style="zoom:80%;" />
+<p>先加，然后逻辑右移，移到符号位为止</p>
+<p>符号位要修改，ACC和MQ当中处符号位之外的一起</p>
+<details open><summary>手算方式</summary>
+  <div class="markdown-inner">
+    <img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704171150783.png" alt="image-20230704171150783" style="zoom:80%;" />
+  </div>
+</details>
+
+<h3 id="补码一位乘法">
+  补码一位乘法
+  <a class="anchor" href="#%e8%a1%a5%e7%a0%81%e4%b8%80%e4%bd%8d%e4%b9%98%e6%b3%95">#</a>
+</h3>
+<p><code>Booth算法</code></p>
+<p>MQ多一位辅助位在最后，ACC和X多一个双符号位在前面</p>
+<p>在最后还会再加一次</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704194520926.png" alt="image-20230704194520926" style="zoom:80%;" />
+<p>在电路上，有专门的辅助电路帮助进行</p>
+<h2 id="除法">
+  除法
+  <a class="anchor" href="#%e9%99%a4%e6%b3%95">#</a>
+</h2>
+<h3 id="原码-恢复余数法">
+  原码-恢复余数法
+  <a class="anchor" href="#%e5%8e%9f%e7%a0%81-%e6%81%a2%e5%a4%8d%e4%bd%99%e6%95%b0%e6%b3%95">#</a>
+</h3>
+<p>取绝对值进行计算，符号位单独来</p>
+<p>设商为1，进行减法计算，发现为负值，恢复余数，改为0</p>
+<p>逻辑左移</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704212654756.png" alt="image-20230704212654756" style="zoom:80%;" />
+<h3 id="原码-加减交替法">
+  原码-加减交替法
+  <a class="anchor" href="#%e5%8e%9f%e7%a0%81-%e5%8a%a0%e5%87%8f%e4%ba%a4%e6%9b%bf%e6%b3%95">#</a>
+</h3>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704213307191.png" alt="image-20230704213307191" style="zoom:80%;" />
+<h3 id="补码-加减交替法">
+  补码-加减交替法
+  <a class="anchor" href="#%e8%a1%a5%e7%a0%81-%e5%8a%a0%e5%87%8f%e4%ba%a4%e6%9b%bf%e6%b3%95">#</a>
+</h3>
+<p>双符号位参与计算</p>
+<p>最后一位商恒置为1</p>
+<p>天，这里怎么可能记得住</p>
 </article>
  
       
@@ -449,7 +537,23 @@ code.has-jax {
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#乘法">乘法</a>
+      <ul>
+        <li><a href="#原码一位乘法">原码一位乘法</a></li>
+        <li><a href="#补码一位乘法">补码一位乘法</a></li>
+      </ul>
+    </li>
+    <li><a href="#除法">除法</a>
+      <ul>
+        <li><a href="#原码-恢复余数法">原码-恢复余数法</a></li>
+        <li><a href="#原码-加减交替法">原码-加减交替法</a></li>
+        <li><a href="#补码-加减交替法">补码-加减交替法</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 
  

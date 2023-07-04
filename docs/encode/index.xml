@@ -48,26 +48,5 @@
 左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#</description>
     </item>
     
-    <item>
-      <title>2.3 运算方法和电路</title>
-      <link>https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/</guid>
-      <description>运算方法和电路#运算部件#ALU：Arithmetic and Logic Unit，能进行加减运算、逻辑运算和一些移位、取补的操作（控制信号指明）
-门电路实现与或非
-优先级：与 &amp;gt; 或
-异或门实现加法运算
-宏观来看一个加法器应该是这样：
-电路实现#一位全加器 \[S_i = A_i \oplus B_i \oplus C_{i-1} \\C_i = A_i B_i &amp;#43; (A_i \oplus B_i)C_{i-1}\]电路设计↕串行进位全加器
-并行进位加法器
-对进位的公式进行了展开，发现了可以进行超前进位的特点，即：
-\(C_i\)只与 \(\{A_i\}\)，\(\{B_i\}\)和\(C_0\)有关
-一般定义 \(G_i = A_i B_i, \quad P_i = A_i \oplus B_i\)CLA部件实现对进位的超前计算，全先行进位加法器的组成：
-CLA部件的电路↕可发现位数越高电路越复杂，一般也就到4位带标志位的加法器
-定义了四个标志位：
-溢出标志OF：最高位的进位\(C_i\oplus\)次高位的进位\(C_{i-1}\)（只对于有符号数运算有意义） 符号标志SF: 即结果最高位，0表示为正，1为负 （只对于有符号数运算有意义） 进or借位标志CF: \(C_{out} \oplus C_{in}\)，即最高位进位和运算符(0为+)的异或 （无符号数有意义）是对无符号数判断是否溢出的标志，而有符号数是看OF 零标志ZF: 结果全为0时为1 移位#算术移位（有符号数）#用原码： 即改变位权，对于定点数无法改变小数点位置，所以是向左向右补零，相当于乘除2</description>
-    </item>
-    
   </channel>
 </rss>

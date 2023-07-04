@@ -3,19 +3,34 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="存储系统#">
+<meta name="description" content="C语言类型转换#C语言中定点整数都是补码表示（除非有unsigned）
+有符号和无符号转换：理解方式不一样而已
+不同字长：裁剪，符号扩展
+存储和排列#大小端模式#大端：MSB存入低地址
+小段：LSB存入低地址
+边界对齐#字地址和字节地址
+每次访存只能读写1个字
+空间换时间">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="第三章 存储系统" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/storage/" />
-<title>第三章 存储系统 | Computer Organization</title>
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="" />
+<meta property="og:description" content="C语言类型转换#C语言中定点整数都是补码表示（除非有unsigned）
+有符号和无符号转换：理解方式不一样而已
+不同字长：裁剪，符号扩展
+存储和排列#大小端模式#大端：MSB存入低地址
+小段：LSB存入低地址
+边界对齐#字地址和字节地址
+每次访存只能读写1个字
+空间换时间" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%85%B6%E5%AE%83/" /><meta property="article:section" content="encode" />
+
+
+<title>其它 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/computer_organization/flexsearch.min.js"></script>
   <script defer src="/computer_organization/en.search.min.d16d56f0eae2e3d6032ddf50766c505b9fd0c7b73313bfb65ed660f66bcc8107.js" integrity="sha256-0W1W8Ori49YDLd9QdmxQW5/Qx7czE7&#43;2XtZg9mvMgQc=" crossorigin="anonymous"></script>
-<link rel="alternate" type="application/rss+xml" href="https://zvictorliu.github.io/computer_organization/storage/index.xml" title="Computer Organization" />
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -126,7 +141,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle" checked />
     <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
       <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
     </label>
@@ -181,7 +196,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%85%B6%E5%AE%83/" class="">其它</a>
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%85%B6%E5%AE%83/" class="active">其它</a>
   
 
         </li>
@@ -204,7 +219,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/storage/" class="active">第三章 存储系统</a>
+    <a href="/computer_organization/storage/" class="">第三章 存储系统</a>
   
 
           
@@ -341,7 +356,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>第三章 存储系统</strong>
+  <strong>其它</strong>
 
   <label for="toc-control">
     
@@ -356,7 +371,17 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#c语言类型转换">C语言类型转换</a></li>
+    <li><a href="#存储和排列">存储和排列</a>
+      <ul>
+        <li><a href="#大小端模式">大小端模式</a></li>
+        <li><a href="#边界对齐">边界对齐</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 
 
@@ -367,10 +392,31 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="存储系统">
-  存储系统
-  <a class="anchor" href="#%e5%ad%98%e5%82%a8%e7%b3%bb%e7%bb%9f">#</a>
-</h1>
+  <article class="markdown"><h2 id="c语言类型转换">
+  C语言类型转换
+  <a class="anchor" href="#c%e8%af%ad%e8%a8%80%e7%b1%bb%e5%9e%8b%e8%bd%ac%e6%8d%a2">#</a>
+</h2>
+<p>C语言中定点整数都是补码表示（除非有<code>unsigned</code>）</p>
+<p>有符号和无符号转换：理解方式不一样而已</p>
+<p>不同字长：裁剪，符号扩展</p>
+<h2 id="存储和排列">
+  存储和排列
+  <a class="anchor" href="#%e5%ad%98%e5%82%a8%e5%92%8c%e6%8e%92%e5%88%97">#</a>
+</h2>
+<h3 id="大小端模式">
+  大小端模式
+  <a class="anchor" href="#%e5%a4%a7%e5%b0%8f%e7%ab%af%e6%a8%a1%e5%bc%8f">#</a>
+</h3>
+<p>大端：<code>MSB</code>存入低地址</p>
+<p>小段：<code>LSB</code>存入低地址</p>
+<h3 id="边界对齐">
+  边界对齐
+  <a class="anchor" href="#%e8%be%b9%e7%95%8c%e5%af%b9%e9%bd%90">#</a>
+</h3>
+<p>字地址和字节地址</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704214548315.png" alt="image-20230704214548315" /></p>
+<p>每次访存只能读写1个字</p>
+<p>空间换时间</p>
 </article>
  
       
@@ -449,7 +495,17 @@ code.has-jax {
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#c语言类型转换">C语言类型转换</a></li>
+    <li><a href="#存储和排列">存储和排列</a>
+      <ul>
+        <li><a href="#大小端模式">大小端模式</a></li>
+        <li><a href="#边界对齐">边界对齐</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 
 
  
