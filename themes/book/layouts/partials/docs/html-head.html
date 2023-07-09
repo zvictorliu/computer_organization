@@ -10,6 +10,7 @@
 
 {{- template "_internal/opengraph.html" . -}}
 
+
 <title>{{ partial "docs/html-head-title" . }}</title>
 
 {{- $manifest := resources.Get "manifest.json" | resources.ExecuteAsTemplate "manifest.json" . }}
@@ -53,3 +54,5 @@ https://github.com/alex-shpak/hugo-book
     integrity="{{ .Data.Integrity }}" crossorigin="anonymous"
   {{- end -}}
 {{- end -}}
+
+
