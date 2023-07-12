@@ -3,27 +3,45 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="加法器#宏观来看一个加法器应该是这样：
-一位全加器#$$ S_i = A_i \oplus B_i \oplus C_{i-1} \\ C_i = A_i B_i &#43; (A_i \oplus B_i)C_{i-1} $$ 电路设计↕串行进位全加器#并行进位加法器#对进位的公式进行了展开，发现了可以进行超前进位的特点，即：
-$C_i$ 只与 ${A_i}$，${B_i}$和$C_0$有关
-一般定义 $G_i = A_i B_i, \quad P_i = A_i \oplus B_i$
-CLA部件实现对进位的超前计算，全先行进位加法器的组成：
-CLA部件的电路↕可发现位数越高电路越复杂，一般也就到4位带标志位的加法器#定义了四个标志位：
-溢出标志OF：最高位的进位$C_i\oplus$次高位的进位$C_{i-1}$（只对于有符号数运算有意义） 符号标志SF: 即结果最高位，0表示为正，1为负 （只对于有符号数运算有意义） 进or借位标志CF: $C_{out} \oplus C_{in}$，即最高位进位和运算符(0为&#43;)的异或 （无符号数有意义）是对无符号数判断是否溢出的标志，而有符号数是看OF 零标志ZF: 结果全为0时为1 补码加减#多路选择器MUX，运算控制信号进行选择，当为减法时选择 $\bar{Y}$ 然后进位 $C_{in} = 1$，就实现了取反末位&#43;1的处理">
+<meta name="description" content="主存与CPU连接#这样的基本连接模型：
+当CPU的DB和AB长度和存储器不一致时，需要进行扩展：
+​	字扩展：增大存储单元数量
+​	位扩展：增大存储芯片字长
+单块#一块存储芯片：
+地址线&ndash;存储单元个数，数据线&ndash;存储字长，控制线，片选线
+而经常是总线数量比接口多，于是有位扩展和字扩展
+多块#位扩展#每块只有一位 ($8K \times 1 bit$)，合起来
+字扩展#扩展容量（AB比地址接口多，寻址能力没有充分发挥）
+取高位地址为片选信号:
+​	线选法：最直接的，有且只有一位使能，高位数量n对应块数量n，地址空间不连续（00 11这样的无效）
+​	译码片选法：采用非门，能够利用的就更多了，高位数量n对应块数量$2^n$
+字位同时扩展#横向是字扩展，纵向是位扩展
+译码器#CPU的MAR送出地址信号，待稳定后CPU再发出存储器请求信号使能译码器，进一步使能存储器
+即译码器有多个使能同时作用才有效：
+说存储器容量表示为 xxB时是字数*字长的结果">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="" />
-<meta property="og:description" content="加法器#宏观来看一个加法器应该是这样：
-一位全加器#$$ S_i = A_i \oplus B_i \oplus C_{i-1} \\ C_i = A_i B_i &#43; (A_i \oplus B_i)C_{i-1} $$ 电路设计↕串行进位全加器#并行进位加法器#对进位的公式进行了展开，发现了可以进行超前进位的特点，即：
-$C_i$ 只与 ${A_i}$，${B_i}$和$C_0$有关
-一般定义 $G_i = A_i B_i, \quad P_i = A_i \oplus B_i$
-CLA部件实现对进位的超前计算，全先行进位加法器的组成：
-CLA部件的电路↕可发现位数越高电路越复杂，一般也就到4位带标志位的加法器#定义了四个标志位：
-溢出标志OF：最高位的进位$C_i\oplus$次高位的进位$C_{i-1}$（只对于有符号数运算有意义） 符号标志SF: 即结果最高位，0表示为正，1为负 （只对于有符号数运算有意义） 进or借位标志CF: $C_{out} \oplus C_{in}$，即最高位进位和运算符(0为&#43;)的异或 （无符号数有意义）是对无符号数判断是否溢出的标志，而有符号数是看OF 零标志ZF: 结果全为0时为1 补码加减#多路选择器MUX，运算控制信号进行选择，当为减法时选择 $\bar{Y}$ 然后进位 $C_{in} = 1$，就实现了取反末位&#43;1的处理" />
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="3.2 主存与CPU连接" />
+<meta property="og:description" content="主存与CPU连接#这样的基本连接模型：
+当CPU的DB和AB长度和存储器不一致时，需要进行扩展：
+​	字扩展：增大存储单元数量
+​	位扩展：增大存储芯片字长
+单块#一块存储芯片：
+地址线&ndash;存储单元个数，数据线&ndash;存储字长，控制线，片选线
+而经常是总线数量比接口多，于是有位扩展和字扩展
+多块#位扩展#每块只有一位 ($8K \times 1 bit$)，合起来
+字扩展#扩展容量（AB比地址接口多，寻址能力没有充分发挥）
+取高位地址为片选信号:
+​	线选法：最直接的，有且只有一位使能，高位数量n对应块数量n，地址空间不连续（00 11这样的无效）
+​	译码片选法：采用非门，能够利用的就更多了，高位数量n对应块数量$2^n$
+字位同时扩展#横向是字扩展，纵向是位扩展
+译码器#CPU的MAR送出地址信号，待稳定后CPU再发出存储器请求信号使能译码器，进一步使能存储器
+即译码器有多个使能同时作用才有效：
+说存储器容量表示为 xxB时是字数*字长的结果" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/" /><meta property="article:section" content="encode" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/mem/%E4%B8%BB%E5%AD%98%E4%B8%8Ecpu%E8%BF%9E%E6%8E%A5/" /><meta property="article:section" content="mem" />
 
 
-<title>加减 | Computer Organization</title>
+<title>3.2 主存与CPU连接 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
@@ -139,7 +157,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle" checked />
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
     <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
       <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
     </label>
@@ -155,7 +173,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/" class="active">加减</a>
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/" class="">加减</a>
   
 
         </li>
@@ -243,7 +261,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98%E4%B8%8Ecpu%E8%BF%9E%E6%8E%A5/" class="">3.2 主存与CPU连接</a>
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98%E4%B8%8Ecpu%E8%BF%9E%E6%8E%A5/" class="active">3.2 主存与CPU连接</a>
   
 
         </li>
@@ -393,7 +411,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>加减</strong>
+  <strong>3.2 主存与CPU连接</strong>
 
   <label for="toc-control">
     
@@ -410,15 +428,15 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#加法器">加法器</a>
+    <li><a href="#单块">单块</a></li>
+    <li><a href="#多块">多块</a>
       <ul>
-        <li><a href="#一位全加器">一位全加器</a></li>
-        <li><a href="#串行进位全加器">串行进位全加器</a></li>
-        <li><a href="#并行进位加法器">并行进位加法器</a></li>
-        <li><a href="#带标志位的加法器">带标志位的加法器</a></li>
+        <li><a href="#位扩展">位扩展</a></li>
+        <li><a href="#字扩展">字扩展</a></li>
+        <li><a href="#字位同时扩展">字位同时扩展</a></li>
       </ul>
     </li>
-    <li><a href="#补码加减">补码加减</a></li>
+    <li><a href="#译码器">译码器</a></li>
   </ul>
 </nav>
 
@@ -431,85 +449,55 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h2 id="加法器">
-  加法器
-  <a class="anchor" href="#%e5%8a%a0%e6%b3%95%e5%99%a8">#</a>
+  <article class="markdown"><h1 id="主存与cpu连接">
+  主存与CPU连接
+  <a class="anchor" href="#%e4%b8%bb%e5%ad%98%e4%b8%8ecpu%e8%bf%9e%e6%8e%a5">#</a>
+</h1>
+<p>这样的基本连接模型：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712202920910.png" alt="image-20230712202920910" style="zoom:70%;" />
+<p>当CPU的DB和AB长度和存储器不一致时，需要进行扩展：</p>
+<p>​	字扩展：增大存储单元数量</p>
+<p>​	位扩展：增大存储芯片字长</p>
+<h2 id="单块">
+  单块
+  <a class="anchor" href="#%e5%8d%95%e5%9d%97">#</a>
 </h2>
-<p>宏观来看一个加法器应该是这样：</p>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704160232267.png" alt="image-20230704160232267" style="zoom:67%;" />
-<h3 id="一位全加器">
-  一位全加器
-  <a class="anchor" href="#%e4%b8%80%e4%bd%8d%e5%85%a8%e5%8a%a0%e5%99%a8">#</a>
-</h3>
-<p>$$
-S_i = A_i \oplus B_i \oplus C_{i-1} \\
-C_i = A_i B_i + (A_i \oplus B_i)C_{i-1}
-$$
-
-<div class="book-expand">
-  <label>
-    <div class="book-expand-head flex justify-between">
-      <span>电路设计</span>
-      <span>↕</span>
-    </div>
-    <input type="checkbox" class="hidden" />
-    <div class="book-expand-content markdown-inner">
-      <img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702222005491.png" alt="image-20230702222005491" style="zoom:80%;" />
-    </div>
-  </label>
-</div>
-</p>
-<h3 id="串行进位全加器">
-  串行进位全加器
-  <a class="anchor" href="#%e4%b8%b2%e8%a1%8c%e8%bf%9b%e4%bd%8d%e5%85%a8%e5%8a%a0%e5%99%a8">#</a>
-</h3>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702221927526.png" alt="image-20230702221927526" style="zoom:90%;" />
-<h3 id="并行进位加法器">
-  并行进位加法器
-  <a class="anchor" href="#%e5%b9%b6%e8%a1%8c%e8%bf%9b%e4%bd%8d%e5%8a%a0%e6%b3%95%e5%99%a8">#</a>
-</h3>
-<p>对进位的公式进行了展开，发现了可以进行超前进位的特点，即：</p>
-<blockquote>
-<p>$C_i$ 只与 ${A_i}$，${B_i}$和$C_0$有关</p>
-<p>一般定义 $G_i = A_i B_i, \quad P_i = A_i \oplus B_i$</p>
-</blockquote>
-<p><code>CLA</code>部件实现对进位的超前计算，全先行进位加法器的组成：</p>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704155705232.png" alt="image-20230704155705232" style="zoom:80%;" />
-
-<div class="book-expand">
-  <label>
-    <div class="book-expand-head flex justify-between">
-      <span>CLA部件的电路</span>
-      <span>↕</span>
-    </div>
-    <input type="checkbox" class="hidden" />
-    <div class="book-expand-content markdown-inner">
-      <img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704155810400.png" alt="image-20230704155810400" style="zoom:80%;" />
-<p>可发现位数越高电路越复杂，一般也就到4位
-    </div>
-  </label>
-</div>
-
-<h3 id="带标志位的加法器">
-  带标志位的加法器
-  <a class="anchor" href="#%e5%b8%a6%e6%a0%87%e5%bf%97%e4%bd%8d%e7%9a%84%e5%8a%a0%e6%b3%95%e5%99%a8">#</a>
-</h3>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704162324221.png" alt="image-20230704162324221" style="zoom:80%;"  align = "right"/>
-<p>定义了四个标志位：</p>
-<ul>
-<li>溢出标志<code>OF</code>：最高位的进位$C_i\oplus$次高位的进位$C_{i-1}$（只对于<u>有符号数</u>运算有意义）</li>
-<li>符号标志<code>SF</code>: 即结果最高位，0表示为正，1为负 （只对于<u>有符号数</u>运算有意义）</li>
-<li>进or借位标志<code>CF</code>: $C_{out} \oplus C_{in}$，即最高位进位和运算符(0为+)的异或 （<u>无符号数</u>有意义）是对无符号数判断是否溢出的标志，而有符号数是看<code>OF</code></li>
-<li>零标志<code>ZF</code>: 结果全为0时为1</li>
-</ul>
-<h2 id="补码加减">
-  补码加减
-  <a class="anchor" href="#%e8%a1%a5%e7%a0%81%e5%8a%a0%e5%87%8f">#</a>
+<p>一块存储芯片：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712203018766.png" alt="image-20230712203018766" style="zoom:70%;" />
+<p>地址线&ndash;存储单元个数，数据线&ndash;存储字长，控制线，片选线</p>
+<p>而经常是总线数量比接口多，于是有位扩展和字扩展</p>
+<h2 id="多块">
+  多块
+  <a class="anchor" href="#%e5%a4%9a%e5%9d%97">#</a>
 </h2>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230704162806860.png" alt="image-20230704162806860" style="zoom:80%;" />
-<p>多路选择器<code>MUX</code>，运算控制信号进行选择，当为减法时选择 $\bar{Y}$ 然后进位 $C_{in} = 1$，就实现了取反末位+1的处理</p>
-<p>同样也可以用于无符号的加减运算</p>
-<p>但是判断溢出的方法是不同的</p>
+<h3 id="位扩展">
+  位扩展
+  <a class="anchor" href="#%e4%bd%8d%e6%89%a9%e5%b1%95">#</a>
+</h3>
+<p>每块只有一位 ($8K \times 1 bit$)，合起来</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712203351125.png" alt="image-20230712203351125" style="zoom:70%;" />
+<h3 id="字扩展">
+  字扩展
+  <a class="anchor" href="#%e5%ad%97%e6%89%a9%e5%b1%95">#</a>
+</h3>
+<p>扩展容量（AB比地址接口多，寻址能力没有充分发挥）</p>
+<p>取高位地址为片选信号:</p>
+<p>​	线选法：最直接的，有且只有一位使能，高位数量n对应块数量n，地址空间不连续（00 11这样的无效）</p>
+<p>​	译码片选法：采用非门，能够利用的就更多了，高位数量n对应块数量$2^n$</p>
+<h3 id="字位同时扩展">
+  字位同时扩展
+  <a class="anchor" href="#%e5%ad%97%e4%bd%8d%e5%90%8c%e6%97%b6%e6%89%a9%e5%b1%95">#</a>
+</h3>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712204640890.png" alt="image-20230712204640890" style="zoom:67%;" />
+<p>横向是字扩展，纵向是位扩展</p>
+<h2 id="译码器">
+  译码器
+  <a class="anchor" href="#%e8%af%91%e7%a0%81%e5%99%a8">#</a>
+</h2>
+<p>CPU的MAR送出地址信号，<u>待稳定后</u>CPU再发出存储器请求信号使能译码器，进一步使能存储器</p>
+<p>即译码器有多个使能同时作用才有效：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712205454434.png" alt="image-20230712205454434" /></p>
+<p>说存储器容量表示为 xxB时是字数*字长的结果</p>
 </article>
  
       
@@ -590,15 +578,15 @@ code.has-jax {
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#加法器">加法器</a>
+    <li><a href="#单块">单块</a></li>
+    <li><a href="#多块">多块</a>
       <ul>
-        <li><a href="#一位全加器">一位全加器</a></li>
-        <li><a href="#串行进位全加器">串行进位全加器</a></li>
-        <li><a href="#并行进位加法器">并行进位加法器</a></li>
-        <li><a href="#带标志位的加法器">带标志位的加法器</a></li>
+        <li><a href="#位扩展">位扩展</a></li>
+        <li><a href="#字扩展">字扩展</a></li>
+        <li><a href="#字位同时扩展">字位同时扩展</a></li>
       </ul>
     </li>
-    <li><a href="#补码加减">补码加减</a></li>
+    <li><a href="#译码器">译码器</a></li>
   </ul>
 </nav>
 

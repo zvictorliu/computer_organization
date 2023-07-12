@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="外存#磁盘（机械硬盘）#写：电流方向控制磁头上极性变换，再有磁性记录介质
+读：切割磁感线
+是每1bit的读写，且不能同时进行
+非破坏性，介质可重复使用，长期保存
+组成#盘片
+一个记录面对应一个磁头，盘面上一圈一圈图上介质，为磁道
+柱面号表示哪条磁道；扇区号表示哪个角度区间
+以扇区为单位（但是1位1位的）
+磁盘驱动器：驱动旋转
+磁盘控制器：与主机的接口，有常见标准SATA
+正反面都可以涂上：
+指标#容量：
+非格式化容量：物理上如果全用上的最大容量
+格式化容量：留出一些备份区间，能用的最大容量
+记录密度：
+道密度：磁道数/半径
+位密度：二进制码位数/磁道周长
+面密度：位密度*道密度
+每个扇区内的不同磁道的比特数是相等的，内侧位密度更大
+平均存取时间：
+寻道（磁头移动到对应磁道）$\rightarrow$ 旋转延迟（定位到扇区）$\rightarrow$ 传输时间，还可能算上控制命令的延迟
+一般未明说旋转延迟按平均来说：转半圈
+数据传输率：$D_r = 转速r \times 磁道容量N$
+磁盘编址#驱动器号&#43;磁道号&#43;盘面号&#43;扇区号
+盘面号激活哪个磁头（磁头是一列整体移动的）
+读写#总线并行，磁盘串行
+串并转换，一位一位读写
+磁盘阵列#廉价冗余磁盘阵列RAID
+RAID0：连续的数据分在相邻的磁盘上，能够提高速度（不总在一个磁盘上操作），能进行访问；但没有容错能力
+RAID1：镜像，安全性提高但减少了一般容量
+RAID2：存海明校验码而不存copy，RAID3-5就是其它的校验码，可靠性更高
+SSD（固态硬盘）#各个小芯片组成，基于闪存技术的EEPROM
+以页为单位进行读写：逻辑块对应SSD块当中的页
+按块擦除：当需要擦除某一页时是先把其它页复制到别的块再将整个块擦除
+而写之前必须擦除，是复制后写在新的页中，块号是会变化的，闪存翻译层会重新映射
+也支持随机访问（尽管是ROM），是电路定位，机械硬盘则不是时间均匀的（它写相对于读是慢的，但是相对于机械硬盘仍是很快的）
+缺点是：擦除过多会坏掉，而机械硬盘则不会
+闪存翻译层有一个平均磨损算法（迁移块时有考虑）
+​	动态磨损均衡：每次迁移到磨损最少的块
+​	静态磨损均衡：读多写少的数据放到比较老的块
+不过，实际上寿命还是很长的，并没有那么容易坏">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="3.3 外存" />
+<meta property="og:description" content="外存#磁盘（机械硬盘）#写：电流方向控制磁头上极性变换，再有磁性记录介质
+读：切割磁感线
+是每1bit的读写，且不能同时进行
+非破坏性，介质可重复使用，长期保存
+组成#盘片
+一个记录面对应一个磁头，盘面上一圈一圈图上介质，为磁道
+柱面号表示哪条磁道；扇区号表示哪个角度区间
+以扇区为单位（但是1位1位的）
+磁盘驱动器：驱动旋转
+磁盘控制器：与主机的接口，有常见标准SATA
+正反面都可以涂上：
+指标#容量：
+非格式化容量：物理上如果全用上的最大容量
+格式化容量：留出一些备份区间，能用的最大容量
+记录密度：
+道密度：磁道数/半径
+位密度：二进制码位数/磁道周长
+面密度：位密度*道密度
+每个扇区内的不同磁道的比特数是相等的，内侧位密度更大
+平均存取时间：
+寻道（磁头移动到对应磁道）$\rightarrow$ 旋转延迟（定位到扇区）$\rightarrow$ 传输时间，还可能算上控制命令的延迟
+一般未明说旋转延迟按平均来说：转半圈
+数据传输率：$D_r = 转速r \times 磁道容量N$
+磁盘编址#驱动器号&#43;磁道号&#43;盘面号&#43;扇区号
+盘面号激活哪个磁头（磁头是一列整体移动的）
+读写#总线并行，磁盘串行
+串并转换，一位一位读写
+磁盘阵列#廉价冗余磁盘阵列RAID
+RAID0：连续的数据分在相邻的磁盘上，能够提高速度（不总在一个磁盘上操作），能进行访问；但没有容错能力
+RAID1：镜像，安全性提高但减少了一般容量
+RAID2：存海明校验码而不存copy，RAID3-5就是其它的校验码，可靠性更高
+SSD（固态硬盘）#各个小芯片组成，基于闪存技术的EEPROM
+以页为单位进行读写：逻辑块对应SSD块当中的页
+按块擦除：当需要擦除某一页时是先把其它页复制到别的块再将整个块擦除
+而写之前必须擦除，是复制后写在新的页中，块号是会变化的，闪存翻译层会重新映射
+也支持随机访问（尽管是ROM），是电路定位，机械硬盘则不是时间均匀的（它写相对于读是慢的，但是相对于机械硬盘仍是很快的）
+缺点是：擦除过多会坏掉，而机械硬盘则不会
+闪存翻译层有一个平均磨损算法（迁移块时有考虑）
+​	动态磨损均衡：每次迁移到磨损最少的块
+​	静态磨损均衡：读多写少的数据放到比较老的块
+不过，实际上寿命还是很长的，并没有那么容易坏" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/mem/%E5%A4%96%E5%AD%98/" /><meta property="article:section" content="mem" />
+
+
+<title>3.3 外存 | Computer Organization</title>
+<link rel="manifest" href="/computer_organization/manifest.json">
+<link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_organization/flexsearch.min.js"></script>
+  <script defer src="/computer_organization/en.search.min.0accd40cd60b3f84dca930e6a148b35c7077c464ff39cc39dfdb3319977949fc.js" integrity="sha256-CszUDNYLP4TcqTDmoUizXHB3xGT/Ocw539szGZd5Sfw=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_organization/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/computer_organization_logo.png" alt="Logo" /><span>Computer Organization</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/introduction/" class="">第一章 绪论</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/" class="">第二章 编码</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%A1%A8%E7%A4%BA/" class="">2.1 整数和定点小数编码</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
+    <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
+      <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/" class="">加减</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/" class="">移位</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E4%B9%98%E9%99%A4/" class="">乘除</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%85%B6%E5%AE%83/" class="">其它</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/" class="">第三章 存储系统</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98/" class="">3.1 主存</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98%E4%B8%8Ecpu%E8%BF%9E%E6%8E%A5/" class="">3.2 主存与CPU连接</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E5%A4%96%E5%AD%98/" class="active">3.3 外存</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/instructions/" class="">第四章 指令系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/cpu/" class="">第五章 中央处理器</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/" class="">第六章 总线</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/io/" class="">第七章 IO系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_organization"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>3.3 外存</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_organization/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#磁盘机械硬盘">磁盘（机械硬盘）</a>
+      <ul>
+        <li><a href="#组成">组成</a></li>
+        <li><a href="#指标">指标</a></li>
+        <li><a href="#磁盘编址">磁盘编址</a></li>
+        <li><a href="#读写">读写</a></li>
+        <li><a href="#磁盘阵列">磁盘阵列</a></li>
+      </ul>
+    </li>
+    <li><a href="#ssd固态硬盘">SSD（固态硬盘）</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="外存">
+  外存
+  <a class="anchor" href="#%e5%a4%96%e5%ad%98">#</a>
+</h1>
+<h2 id="磁盘机械硬盘">
+  磁盘（机械硬盘）
+  <a class="anchor" href="#%e7%a3%81%e7%9b%98%e6%9c%ba%e6%a2%b0%e7%a1%ac%e7%9b%98">#</a>
+</h2>
+<p>写：电流方向控制磁头上极性变换，再有磁性记录介质</p>
+<p>读：切割磁感线</p>
+<p>是每1bit的读写，且不能同时进行</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712211650329.png" alt="image-20230712211650329" style="zoom:80%;" />
+<p>非破坏性，介质可重复使用，长期保存</p>
+<h3 id="组成">
+  组成
+  <a class="anchor" href="#%e7%bb%84%e6%88%90">#</a>
+</h3>
+<p>盘片</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712211907896.png" alt="image-20230712211907896" style="zoom:67%;" />
+<p>一个记录面对应一个磁头，盘面上一圈一圈图上介质，为磁道</p>
+<p>柱面号表示哪条磁道；扇区号表示哪个角度区间</p>
+<p>以扇区为单位（但是1位1位的）</p>
+<p>磁盘驱动器：驱动旋转</p>
+<p>磁盘控制器：与主机的接口，有常见标准<code>SATA</code></p>
+<p>正反面都可以涂上：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712212545905.png" alt="image-20230712212545905" style="zoom:67%;" />
+<h3 id="指标">
+  指标
+  <a class="anchor" href="#%e6%8c%87%e6%a0%87">#</a>
+</h3>
+<ul>
+<li>
+<p>容量：</p>
+<ul>
+<li>
+<p>非格式化容量：物理上如果全用上的最大容量</p>
+</li>
+<li>
+<p>格式化容量：留出一些备份区间，能用的最大容量</p>
+</li>
+</ul>
+</li>
+<li>
+<p>记录密度：</p>
+<ul>
+<li>
+<p>道密度：磁道数/半径</p>
+</li>
+<li>
+<p>位密度：二进制码位数/磁道周长</p>
+</li>
+<li>
+<p>面密度：位密度*道密度</p>
+<p>每个扇区内的不同磁道的比特数是相等的，内侧位密度更大</p>
+</li>
+</ul>
+</li>
+<li>
+<p>平均存取时间：</p>
+<p>寻道（磁头移动到对应磁道）$\rightarrow$ 旋转延迟（定位到扇区）$\rightarrow$ 传输时间，还可能算上控制命令的延迟</p>
+<p>一般未明说旋转延迟按平均来说：转半圈</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712213539564.png" alt="image-20230712213539564" style="zoom:67%;" />
+</li>
+<li>
+<p>数据传输率：$D_r = 转速r \times 磁道容量N$</p>
+</li>
+</ul>
+<h3 id="磁盘编址">
+  磁盘编址
+  <a class="anchor" href="#%e7%a3%81%e7%9b%98%e7%bc%96%e5%9d%80">#</a>
+</h3>
+<p>驱动器号+磁道号+盘面号+扇区号</p>
+<p>盘面号激活哪个磁头（磁头是一列整体移动的）</p>
+<h3 id="读写">
+  读写
+  <a class="anchor" href="#%e8%af%bb%e5%86%99">#</a>
+</h3>
+<p>总线并行，磁盘串行</p>
+<p>串并转换，一位一位读写</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712214006808.png" alt="image-20230712214006808" style="zoom:67%;" />
+<h3 id="磁盘阵列">
+  磁盘阵列
+  <a class="anchor" href="#%e7%a3%81%e7%9b%98%e9%98%b5%e5%88%97">#</a>
+</h3>
+<p>廉价冗余磁盘阵列<code>RAID</code></p>
+<p><code>RAID0</code>：连续的数据分在相邻的磁盘上，能够提高速度（不总在一个磁盘上操作），能进行访问；但没有容错能力</p>
+<p><code>RAID1</code>：镜像，安全性提高但减少了一般容量</p>
+<p><code>RAID2</code>：存海明校验码而不存copy，RAID3-5就是其它的校验码，可靠性更高</p>
+<h2 id="ssd固态硬盘">
+  SSD（固态硬盘）
+  <a class="anchor" href="#ssd%e5%9b%ba%e6%80%81%e7%a1%ac%e7%9b%98">#</a>
+</h2>
+<p>各个小芯片组成，基于闪存技术的EEPROM</p>
+<p>以页为单位进行读写：逻辑块对应SSD块当中的页</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230712215031237.png" alt="image-20230712215031237" style="zoom:67%;" />
+<p>按块擦除：当需要擦除某一页时是先把其它页复制到别的块再将整个块擦除</p>
+<p>而写之前必须擦除，是复制后写在新的页中，块号是会变化的，闪存翻译层会重新映射</p>
+<p>也支持随机访问（尽管是ROM），是电路定位，机械硬盘则不是时间均匀的（它写相对于读是慢的，但是相对于机械硬盘仍是很快的）</p>
+<p>缺点是：擦除过多会坏掉，而机械硬盘则不会</p>
+<p>闪存翻译层有一个平均磨损算法（迁移块时有考虑）</p>
+<p>​	动态磨损均衡：每次迁移到磨损最少的块</p>
+<p>​	静态磨损均衡：读多写少的数据放到比较老的块</p>
+<p>不过，实际上寿命还是很长的，并没有那么容易坏</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#磁盘机械硬盘">磁盘（机械硬盘）</a>
+      <ul>
+        <li><a href="#组成">组成</a></li>
+        <li><a href="#指标">指标</a></li>
+        <li><a href="#磁盘编址">磁盘编址</a></li>
+        <li><a href="#读写">读写</a></li>
+        <li><a href="#磁盘阵列">磁盘阵列</a></li>
+      </ul>
+    </li>
+    <li><a href="#ssd固态硬盘">SSD（固态硬盘）</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

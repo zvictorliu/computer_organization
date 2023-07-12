@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="主存#基本组成#半导体 - 存储芯片 - 寻址方式支持
+存储元：1位，MOS管和电容的组成，需要恢复时间的原因
+一次性读取or写入多个存储元的数据
+存储元 - 存储单元 - 存储矩阵（存储体）
+整个存储字是同时被接通的
+读：译码器将MAR中的数据转换位某条路上的高电平，使得对应存储单元中存储元们同时被选择；然后通过数据线写入到MDR中，CPU通过数据总线从MDR中取走
+控制电路：确保电信号稳定后再操作；片选；读写区分
+逻辑上的组成：
+片选线：多个存储矩阵时区分，实际内存条内是有多个存储芯片
+引脚：地址线、数据线、片选线、控制线的接口，还有供电和接地的 （控制线可能为两根或一根）
+按字节编址，一个字节对应一个地址
+而寻址可以按字节、字、半字、双字
+当按字寻址时，通过逻辑右移实现一次性跨越多个字节
+RAM#动态DRAM：栅极电容，静态SRAM：双稳态触发器
+SRAM能够保持状态，读出不需要再生，非破坏，速度块，但构造复杂成本高、面积大、功耗大；cache一般用这个
+DRAM则在读取后需要重写，是破坏性重写
+这两种芯片状态维持都需要电源，都是断电易失的
+DRAM还需要刷新：电容内电荷会随时间流失
+DRAM的刷新#行列地址方式： 减少选通线的数量
+一般一次刷新一行：硬件读取一行再写入
+每隔2ms进行一次刷新
+分散刷新：每次读写完就刷新一行 集中刷新：前面一直读取，之后留出时间来刷新，此时CPU无法访问，是为死区 异步刷新：在周期内每行只刷新一次，每隔一定间隔就刷新一行 DRAM还有地址线复用技术减少地址线（因为DRAM一般地址空间更大）：行地址和列地址分两次传入，先传入行，再存入列
+而SRAM地址空间小，就一次性传入
+ROM#以下并不是说这属于主存
+MROM 掩模式只读存储器：厂家生产时写入之后无法更改
+PROM 可编程只读存储器，用户能写一次
+EPROM 可擦除课编程只读存储器，用户也能多次写入但比较麻烦
+​	UVEPROM：紫外线方式，一次性擦除所有信息
+​	EEPROM：电擦除特定的字
+Flash Memory 闪存：在EEPROM之上发展而来，擦除更快，但是写之前还是需要擦一遍，写会慢于读（比如U盘和SD卡）；它的存储元是单个MOS管，位密度比RAM高
+SSD固态硬盘：在闪存的基础上还有了控制单元
+所以现在说的ROM还真不是纯粹的read only，ROM也可能是随机存取的
+主板上的ROM芯片如BIOS芯片，也划在主存范围内，所以主存不只有内存(RAM)
+多模块技术#解决CPU的速度和主存的速度（受制于DRAM的长恢复时间）匹配问题 $$ 存储周期T = 存取时间r &#43; 恢复时间 $$">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="3.1 主存" />
+<meta property="og:description" content="主存#基本组成#半导体 - 存储芯片 - 寻址方式支持
+存储元：1位，MOS管和电容的组成，需要恢复时间的原因
+一次性读取or写入多个存储元的数据
+存储元 - 存储单元 - 存储矩阵（存储体）
+整个存储字是同时被接通的
+读：译码器将MAR中的数据转换位某条路上的高电平，使得对应存储单元中存储元们同时被选择；然后通过数据线写入到MDR中，CPU通过数据总线从MDR中取走
+控制电路：确保电信号稳定后再操作；片选；读写区分
+逻辑上的组成：
+片选线：多个存储矩阵时区分，实际内存条内是有多个存储芯片
+引脚：地址线、数据线、片选线、控制线的接口，还有供电和接地的 （控制线可能为两根或一根）
+按字节编址，一个字节对应一个地址
+而寻址可以按字节、字、半字、双字
+当按字寻址时，通过逻辑右移实现一次性跨越多个字节
+RAM#动态DRAM：栅极电容，静态SRAM：双稳态触发器
+SRAM能够保持状态，读出不需要再生，非破坏，速度块，但构造复杂成本高、面积大、功耗大；cache一般用这个
+DRAM则在读取后需要重写，是破坏性重写
+这两种芯片状态维持都需要电源，都是断电易失的
+DRAM还需要刷新：电容内电荷会随时间流失
+DRAM的刷新#行列地址方式： 减少选通线的数量
+一般一次刷新一行：硬件读取一行再写入
+每隔2ms进行一次刷新
+分散刷新：每次读写完就刷新一行 集中刷新：前面一直读取，之后留出时间来刷新，此时CPU无法访问，是为死区 异步刷新：在周期内每行只刷新一次，每隔一定间隔就刷新一行 DRAM还有地址线复用技术减少地址线（因为DRAM一般地址空间更大）：行地址和列地址分两次传入，先传入行，再存入列
+而SRAM地址空间小，就一次性传入
+ROM#以下并不是说这属于主存
+MROM 掩模式只读存储器：厂家生产时写入之后无法更改
+PROM 可编程只读存储器，用户能写一次
+EPROM 可擦除课编程只读存储器，用户也能多次写入但比较麻烦
+​	UVEPROM：紫外线方式，一次性擦除所有信息
+​	EEPROM：电擦除特定的字
+Flash Memory 闪存：在EEPROM之上发展而来，擦除更快，但是写之前还是需要擦一遍，写会慢于读（比如U盘和SD卡）；它的存储元是单个MOS管，位密度比RAM高
+SSD固态硬盘：在闪存的基础上还有了控制单元
+所以现在说的ROM还真不是纯粹的read only，ROM也可能是随机存取的
+主板上的ROM芯片如BIOS芯片，也划在主存范围内，所以主存不只有内存(RAM)
+多模块技术#解决CPU的速度和主存的速度（受制于DRAM的长恢复时间）匹配问题 $$ 存储周期T = 存取时间r &#43; 恢复时间 $$" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/mem/%E4%B8%BB%E5%AD%98/" /><meta property="article:section" content="mem" />
+
+
+<title>3.1 主存 | Computer Organization</title>
+<link rel="manifest" href="/computer_organization/manifest.json">
+<link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_organization/flexsearch.min.js"></script>
+  <script defer src="/computer_organization/en.search.min.0accd40cd60b3f84dca930e6a148b35c7077c464ff39cc39dfdb3319977949fc.js" integrity="sha256-CszUDNYLP4TcqTDmoUizXHB3xGT/Ocw539szGZd5Sfw=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_organization/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/computer_organization_logo.png" alt="Logo" /><span>Computer Organization</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/introduction/" class="">第一章 绪论</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/" class="">第二章 编码</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%A1%A8%E7%A4%BA/" class="">2.1 整数和定点小数编码</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
+    <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
+      <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/" class="">加减</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/" class="">移位</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E4%B9%98%E9%99%A4/" class="">乘除</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%85%B6%E5%AE%83/" class="">其它</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/" class="">第三章 存储系统</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98/" class="active">3.1 主存</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98%E4%B8%8Ecpu%E8%BF%9E%E6%8E%A5/" class="">3.2 主存与CPU连接</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E5%A4%96%E5%AD%98/" class="">3.3 外存</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/instructions/" class="">第四章 指令系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/cpu/" class="">第五章 中央处理器</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/" class="">第六章 总线</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/io/" class="">第七章 IO系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_organization"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>3.1 主存</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_organization/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#基本组成">基本组成</a></li>
+    <li><a href="#ram">RAM</a>
+      <ul>
+        <li><a href="#dram的刷新">DRAM的刷新</a></li>
+      </ul>
+    </li>
+    <li><a href="#rom">ROM</a></li>
+    <li><a href="#多模块技术">多模块技术</a>
+      <ul>
+        <li><a href="#多体并行">多体并行</a></li>
+        <li><a href="#单体多字">单体多字</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="主存">
+  主存
+  <a class="anchor" href="#%e4%b8%bb%e5%ad%98">#</a>
+</h1>
+<h2 id="基本组成">
+  基本组成
+  <a class="anchor" href="#%e5%9f%ba%e6%9c%ac%e7%bb%84%e6%88%90">#</a>
+</h2>
+<p>半导体 - 存储芯片 - 寻址方式支持</p>
+<p>存储元：1位，MOS管和电容的组成，需要恢复时间的原因</p>
+<p>一次性读取or写入多个存储元的数据</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711191733069.png" alt="image-20230711191733069" style="zoom:80%;" />
+<p>存储元 - 存储单元 - 存储矩阵（存储体）</p>
+<p>整个存储字是同时被接通的</p>
+<p>读：译码器将MAR中的数据转换位某条路上的高电平，使得对应存储单元中存储元们同时被选择；然后通过数据线写入到MDR中，CPU通过数据总线从MDR中取走</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711192143442.png" alt="image-20230711192143442" style="zoom:67%;" />
+<p>控制电路：确保电信号稳定后再操作；片选；读写区分</p>
+<p>逻辑上的组成：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711192556941.png" alt="image-20230711192556941" style="zoom:67%;" />
+<p>片选线：多个存储矩阵时区分，实际内存条内是有多个存储芯片</p>
+<p>引脚：地址线、数据线、片选线、控制线的接口，还有供电和接地的 （控制线可能为两根或一根）</p>
+<p>按字节编址，一个字节对应一个地址</p>
+<p>而寻址可以按字节、字、半字、双字</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711200102307.png" alt="image-20230711200102307" style="zoom: 67%;" />
+<p>当按字寻址时，通过逻辑右移实现一次性跨越多个字节</p>
+<h2 id="ram">
+  RAM
+  <a class="anchor" href="#ram">#</a>
+</h2>
+<p>动态<code>DRAM</code>：栅极电容，静态<code>SRAM</code>：双稳态触发器</p>
+<p><code>SRAM</code>能够保持状态，读出不需要再生，非破坏，速度块，但构造复杂成本高、面积大、功耗大；cache一般用这个</p>
+<p><code>DRAM</code>则在读取后需要重写，是破坏性重写</p>
+<p>这两种芯片状态维持都需要电源，都是断电易失的</p>
+<p><code>DRAM</code>还需要刷新：电容内电荷会随时间流失</p>
+<h3 id="dram的刷新">
+  DRAM的刷新
+  <a class="anchor" href="#dram%e7%9a%84%e5%88%b7%e6%96%b0">#</a>
+</h3>
+<p>行列地址方式： 减少选通线的数量</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711201533853.png" alt="image-20230711201533853" style="zoom:67%;" />
+<p>一般一次刷新一行：硬件读取一行再写入</p>
+<p>每隔2ms进行一次刷新</p>
+<ul>
+<li>分散刷新：每次读写完就刷新一行</li>
+<li>集中刷新：前面一直读取，之后留出时间来刷新，此时CPU无法访问，是为死区</li>
+<li>异步刷新：在周期内每行只刷新一次，每隔一定间隔就刷新一行</li>
+</ul>
+<p>DRAM还有地址线复用技术减少地址线（因为DRAM一般地址空间更大）：行地址和列地址分两次传入，先传入行，再存入列</p>
+<p>而SRAM地址空间小，就一次性传入</p>
+<h2 id="rom">
+  ROM
+  <a class="anchor" href="#rom">#</a>
+</h2>
+<p><em>以下并不是说这属于主存</em></p>
+<p><code>MROM</code> 掩模式只读存储器：厂家生产时写入之后无法更改</p>
+<p><code>PROM</code> 可编程只读存储器，用户能写一次</p>
+<p><code>EPROM</code> 可擦除课编程只读存储器，用户也能多次写入但比较麻烦</p>
+<p>​	<code>UVEPROM</code>：紫外线方式，一次性擦除所有信息</p>
+<p>​	<code>EEPROM</code>：电擦除特定的字</p>
+<p><code>Flash Memory</code> 闪存：在EEPROM之上发展而来，擦除更快，但是写之前还是需要擦一遍，写会慢于读（比如U盘和SD卡）；它的存储元是单个MOS管，位密度比RAM高</p>
+<p><code>SSD</code>固态硬盘：在闪存的基础上还有了控制单元</p>
+<p>所以现在说的ROM还真不是纯粹的read only，ROM也可能是随机存取的</p>
+<p>主板上的ROM芯片如BIOS芯片，也划在主存范围内，所以主存不只有内存(RAM)</p>
+<h2 id="多模块技术">
+  多模块技术
+  <a class="anchor" href="#%e5%a4%9a%e6%a8%a1%e5%9d%97%e6%8a%80%e6%9c%af">#</a>
+</h2>
+<p>解决CPU的速度和主存的速度（受制于DRAM的长恢复时间）匹配问题
+$$
+存储周期T = 存取时间r + 恢复时间
+$$</p>
+<h3 id="多体并行">
+  多体并行
+  <a class="anchor" href="#%e5%a4%9a%e4%bd%93%e5%b9%b6%e8%a1%8c">#</a>
+</h3>
+<p>多个模块，每个模块有各自的控制电路和寄存器</p>
+<p><strong>高位交叉编址</strong>：体号+体内地址</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711204900590.png" alt="image-20230711204900590" style="zoom: 67%;" />
+<p>这种连续的单元在同一体内仍然是顺序的</p>
+<p><strong>低位交叉编址</strong>：体号放后面低地址，这种才是交叉的</p>
+<p>这种则连续的单元并不是在同一体内</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711210311924.png" alt="image-20230711210311924" style="zoom:67%;" />
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711205338302.png" alt="image-20230711205338302" style="zoom:67%;" />
+<p>模块数的确定：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230711205855525.png" alt="image-20230711205855525" style="zoom:67%;" />
+<p>r为存取时间或总线传输周期（看哪个大）</p>
+<p>加装内存条就可以考虑是高位交叉（单纯扩容）还是低位交叉（双通道）</p>
+<h3 id="单体多字">
+  单体多字
+  <a class="anchor" href="#%e5%8d%95%e4%bd%93%e5%a4%9a%e5%ad%97">#</a>
+</h3>
+<p>只有一个存储体，一次读取一整个存储单元（一整行），一个存储单元内有多个字</p>
+<p>灵活性要更差，当读取的内容跨越了一行后就需要读两次</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#基本组成">基本组成</a></li>
+    <li><a href="#ram">RAM</a>
+      <ul>
+        <li><a href="#dram的刷新">DRAM的刷新</a></li>
+      </ul>
+    </li>
+    <li><a href="#rom">ROM</a></li>
+    <li><a href="#多模块技术">多模块技术</a>
+      <ul>
+        <li><a href="#多体并行">多体并行</a></li>
+        <li><a href="#单体多字">单体多字</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
