@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="高速缓冲存储器#将更常用的拿出来放到速度更快的地方（局部性原理）
+空间局部性：下一次需要到就在这次旁边
+时间局部性：下一次很可能用到同样的信息
+CPU优先去查找cache，有命中和不命中的可能，设命中概率为$H$ $$ t = Ht_c &#43; (1-H)(t_c &#43; t_m) $$ 而如果同时访问cache和主存，cache一旦找到就停下查找主存： $$ t = Ht_c &#43; (1-H)t_m $$ 主存分块（也叫页），以块为单位进行交换
+​	块号&#43;块内地址
+每次在主存当中找到，就把所在块调入cache
+cache和主存的映射#主存块以何种规则放到cache块的哪个位置
+在cache中应当记录其来自何处：主存块号
+还应记录是否有效：有效位（块号是从0开始的，不能通过正数来区分）
+随意放：全相联映射#可以放到任何位置
+访存：由主存地址换算出块号，在cache中检索
+直接映射：固定位置#一般是块号余cache总块数
+如果cache总块数也是$2^n$那么可以直接通过主存块号的低$n$位来得到cache位置块号
+也因为这样，标记就不需要存末尾几位
+所以访存是将地址的块号的末尾几位去检查对应的cache块，就不需要检索了，主存地址理解为：标记位-cache块号-块内地址
+组相联：放到特定分组的任意位置#余组号
+主存地址理解为：标记位-cache组号-块内地址
+n路组相联：每n个cache为一组
+替换算法#全相联：全满后才会考虑替换
+直接映射：如果所属位置被占了那就直接替换它
+组相联：组满才考虑组内替换
+RAND：随机算法
+FIFO：
+LRU：最近最少使用
+计算器记录主存块多久没有被访问了
+细节：其余不变的意义
+LFU：最不经常使用
+反过来，将访问次数最少的换出，记录的是被访问过多少次
+出现相等时，FIFO或者行号递增的顺序
+需要很大的计数器；浓度影响
+写策略：一致性#当修改时，修改了cache中的副本，那么需要同步到主存
+写命中#写回法：只在改块被替换时（且是被修改过的）才写回主存，容易数据不一致
+全写法：修改cache同时也写主存
+这样会影响写的速度，于是设计之间有一个写缓冲，在专门的控制电路上逐一写回">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="3.4 cache" />
+<meta property="og:description" content="高速缓冲存储器#将更常用的拿出来放到速度更快的地方（局部性原理）
+空间局部性：下一次需要到就在这次旁边
+时间局部性：下一次很可能用到同样的信息
+CPU优先去查找cache，有命中和不命中的可能，设命中概率为$H$ $$ t = Ht_c &#43; (1-H)(t_c &#43; t_m) $$ 而如果同时访问cache和主存，cache一旦找到就停下查找主存： $$ t = Ht_c &#43; (1-H)t_m $$ 主存分块（也叫页），以块为单位进行交换
+​	块号&#43;块内地址
+每次在主存当中找到，就把所在块调入cache
+cache和主存的映射#主存块以何种规则放到cache块的哪个位置
+在cache中应当记录其来自何处：主存块号
+还应记录是否有效：有效位（块号是从0开始的，不能通过正数来区分）
+随意放：全相联映射#可以放到任何位置
+访存：由主存地址换算出块号，在cache中检索
+直接映射：固定位置#一般是块号余cache总块数
+如果cache总块数也是$2^n$那么可以直接通过主存块号的低$n$位来得到cache位置块号
+也因为这样，标记就不需要存末尾几位
+所以访存是将地址的块号的末尾几位去检查对应的cache块，就不需要检索了，主存地址理解为：标记位-cache块号-块内地址
+组相联：放到特定分组的任意位置#余组号
+主存地址理解为：标记位-cache组号-块内地址
+n路组相联：每n个cache为一组
+替换算法#全相联：全满后才会考虑替换
+直接映射：如果所属位置被占了那就直接替换它
+组相联：组满才考虑组内替换
+RAND：随机算法
+FIFO：
+LRU：最近最少使用
+计算器记录主存块多久没有被访问了
+细节：其余不变的意义
+LFU：最不经常使用
+反过来，将访问次数最少的换出，记录的是被访问过多少次
+出现相等时，FIFO或者行号递增的顺序
+需要很大的计数器；浓度影响
+写策略：一致性#当修改时，修改了cache中的副本，那么需要同步到主存
+写命中#写回法：只在改块被替换时（且是被修改过的）才写回主存，容易数据不一致
+全写法：修改cache同时也写主存
+这样会影响写的速度，于是设计之间有一个写缓冲，在专门的控制电路上逐一写回" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/mem/cache/" /><meta property="article:section" content="mem" />
+
+
+<title>3.4 cache | Computer Organization</title>
+<link rel="manifest" href="/computer_organization/manifest.json">
+<link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_organization/flexsearch.min.js"></script>
+  <script defer src="/computer_organization/en.search.min.2f5ad780e76030d201d0c1ada3c520e9dc8fee75ec09b77745b85a7162a3e0b6.js" integrity="sha256-L1rXgOdgMNIB0MGto8Ug6dyP7nXsCbd3RbhacWKj4LY=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_organization/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/computer_organization_logo.png" alt="Logo" /><span>Computer Organization</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/introduction/" class="">第一章 绪论</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/" class="">第二章 编码</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%A1%A8%E7%A4%BA/" class="">2.1 整数和定点小数编码</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
+    <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
+      <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/" class="">加减</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/" class="">移位</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E4%B9%98%E9%99%A4/" class="">乘除</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%85%B6%E5%AE%83/" class="">其它</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/" class="">第三章 存储系统</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98/" class="">3.1 主存</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98%E4%B8%8Ecpu%E8%BF%9E%E6%8E%A5/" class="">3.2 主存与CPU连接</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E5%A4%96%E5%AD%98/" class="">3.3 外存</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/cache/" class="active">3.4 cache</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8/" class="">3.5 虚拟存储器</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/" class="">第四章 指令系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/cpu/" class="">第五章 中央处理器</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/" class="">第六章 总线</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/io/" class="">第七章 IO系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_organization"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>3.4 cache</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_organization/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#cache和主存的映射">cache和主存的映射</a>
+      <ul>
+        <li><a href="#随意放全相联映射">随意放：全相联映射</a></li>
+        <li><a href="#直接映射固定位置">直接映射：固定位置</a></li>
+        <li><a href="#组相联放到特定分组的任意位置">组相联：放到特定分组的任意位置</a></li>
+      </ul>
+    </li>
+    <li><a href="#替换算法">替换算法</a></li>
+    <li><a href="#写策略一致性">写策略：一致性</a>
+      <ul>
+        <li><a href="#写命中">写命中</a></li>
+        <li><a href="#写不命中">写不命中</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="高速缓冲存储器">
+  高速缓冲存储器
+  <a class="anchor" href="#%e9%ab%98%e9%80%9f%e7%bc%93%e5%86%b2%e5%ad%98%e5%82%a8%e5%99%a8">#</a>
+</h1>
+<p>将更常用的拿出来放到速度更快的地方（局部性原理）</p>
+<p>空间局部性：下一次需要到就在这次旁边</p>
+<p>时间局部性：下一次很可能用到同样的信息</p>
+<p>CPU优先去查找cache，有命中和不命中的可能，设命中概率为$H$
+$$
+t = Ht_c + (1-H)(t_c + t_m)
+$$
+而如果同时访问cache和主存，cache一旦找到就停下查找主存：
+$$
+t = Ht_c + (1-H)t_m
+$$
+主存分块（也叫页），以块为单位进行交换</p>
+<p>​	块号+块内地址</p>
+<p>每次在主存当中找到，就把所在块调入cache</p>
+<h2 id="cache和主存的映射">
+  cache和主存的映射
+  <a class="anchor" href="#cache%e5%92%8c%e4%b8%bb%e5%ad%98%e7%9a%84%e6%98%a0%e5%b0%84">#</a>
+</h2>
+<p>主存块以何种规则放到cache块的哪个位置</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230713161101261.png" alt="image-20230713161101261" style="zoom:67%;" />
+<p>在cache中应当记录其来自何处：主存块号</p>
+<p>还应记录是否有效：有效位（块号是从0开始的，不能通过正数来区分）</p>
+<h3 id="随意放全相联映射">
+  随意放：全相联映射
+  <a class="anchor" href="#%e9%9a%8f%e6%84%8f%e6%94%be%e5%85%a8%e7%9b%b8%e8%81%94%e6%98%a0%e5%b0%84">#</a>
+</h3>
+<p>可以放到任何位置</p>
+<p>访存：由主存地址换算出块号，在cache中检索</p>
+<h3 id="直接映射固定位置">
+  直接映射：固定位置
+  <a class="anchor" href="#%e7%9b%b4%e6%8e%a5%e6%98%a0%e5%b0%84%e5%9b%ba%e5%ae%9a%e4%bd%8d%e7%bd%ae">#</a>
+</h3>
+<p>一般是块号余cache总块数</p>
+<p>如果cache总块数也是$2^n$那么可以直接通过主存块号的低$n$位来得到cache位置块号</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230713162138621.png" alt="image-20230713162138621" style="zoom:50%;" />
+<p>也因为这样，标记就不需要存末尾几位</p>
+<p>所以访存是将地址的块号的末尾几位去检查对应的cache块，就不需要检索了，主存地址理解为：标记位-cache块号-块内地址</p>
+<h3 id="组相联放到特定分组的任意位置">
+  组相联：放到特定分组的任意位置
+  <a class="anchor" href="#%e7%bb%84%e7%9b%b8%e8%81%94%e6%94%be%e5%88%b0%e7%89%b9%e5%ae%9a%e5%88%86%e7%bb%84%e7%9a%84%e4%bb%bb%e6%84%8f%e4%bd%8d%e7%bd%ae">#</a>
+</h3>
+<p>余组号</p>
+<p>主存地址理解为：标记位-cache组号-块内地址</p>
+<p>n路组相联：每n个cache为一组</p>
+<h2 id="替换算法">
+  替换算法
+  <a class="anchor" href="#%e6%9b%bf%e6%8d%a2%e7%ae%97%e6%b3%95">#</a>
+</h2>
+<p>全相联：全满后才会考虑替换</p>
+<p>直接映射：如果所属位置被占了那就直接替换它</p>
+<p>组相联：组满才考虑组内替换</p>
+<ul>
+<li>
+<p>RAND：随机算法</p>
+</li>
+<li>
+<p>FIFO：</p>
+</li>
+<li>
+<p><strong>LRU</strong>：最近最少使用</p>
+<p>计算器记录主存块多久没有被访问了</p>
+<p>细节：<em>其余不变的意义</em></p>
+</li>
+<li>
+<p>LFU：最不经常使用</p>
+<p>反过来，将访问次数最少的换出，记录的是被访问过多少次</p>
+<p>出现相等时，FIFO或者行号递增的顺序</p>
+<p>需要很大的计数器；浓度影响</p>
+</li>
+</ul>
+<h2 id="写策略一致性">
+  写策略：一致性
+  <a class="anchor" href="#%e5%86%99%e7%ad%96%e7%95%a5%e4%b8%80%e8%87%b4%e6%80%a7">#</a>
+</h2>
+<p>当修改时，修改了cache中的副本，那么需要同步到主存</p>
+<h3 id="写命中">
+  写命中
+  <a class="anchor" href="#%e5%86%99%e5%91%bd%e4%b8%ad">#</a>
+</h3>
+<ul>
+<li>
+<p>写回法：只在改块被替换时（且是被修改过的）才写回主存，容易数据不一致</p>
+</li>
+<li>
+<p>全写法：修改cache同时也写主存</p>
+<p>这样会影响写的速度，于是设计之间有一个写缓冲，在专门的控制电路上逐一写回</p>
+</li>
+</ul>
+<p>​		<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230713165408584.png" alt="image-20230713165408584" style="zoom:57%;" /></p>
+<p>​	一旦满了就会阻塞</p>
+<h3 id="写不命中">
+  写不命中
+  <a class="anchor" href="#%e5%86%99%e4%b8%8d%e5%91%bd%e4%b8%ad">#</a>
+</h3>
+<ul>
+<li>写分配法：先调入cache写，然后再用写回法</li>
+<li>非写分配：直接往主存写，也可以搭配写缓冲的全写法，<strong>并不调入cache</strong>（只有读不命中才调入）</li>
+</ul>
+<p>对于多级cache，在cache之间数据一致性要求高一些采用全写，而cache-主存则是写回</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230713165833690.png" alt="image-20230713165833690" style="zoom:67%;" /></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#cache和主存的映射">cache和主存的映射</a>
+      <ul>
+        <li><a href="#随意放全相联映射">随意放：全相联映射</a></li>
+        <li><a href="#直接映射固定位置">直接映射：固定位置</a></li>
+        <li><a href="#组相联放到特定分组的任意位置">组相联：放到特定分组的任意位置</a></li>
+      </ul>
+    </li>
+    <li><a href="#替换算法">替换算法</a></li>
+    <li><a href="#写策略一致性">写策略：一致性</a>
+      <ul>
+        <li><a href="#写命中">写命中</a></li>
+        <li><a href="#写不命中">写不命中</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
