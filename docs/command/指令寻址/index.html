@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="寻址方式#寻指令#永远是通过PC指向下一条要执行的指令
+顺序寻址#PC不一定是每次&#43;1
+如果是按字编址且指令字长=存储字长的话才是&#43;1
+而如果是按字节编址，两个字节的指令字长，每次是&#43;2
+而如果是变指令字长就更复杂了：需要先读入一个字判断出指令字长
+但是依然会说PC&#43;1，这里的1指的是1个指令字长
+跳跃寻址#通过本次指令告诉计算方式，修改PC
+具体来说，当取出一条转移指令，仍然会PC&#43;1，执行后PC被更改（它这个指令的行为就是修改PC）
+寻数据#由地址码确定真实的物理地址(有效地址EA)
+对地址码有不同的解读方式，地址码包括寻址特征位和形式地址A
+直接寻址#A即为绝对地址，$EA=A$
+访存：取指令1次，执行（找数据）1次，(结果存放在寄存器中不算)
+寻址范围小，且不容易随地址变化而变化
+间接寻址#A是存放有效地址的存储单元的地址，即$EA=(A)$
+访存：取1次，找数据2次
+甚至还可以是多级的：
+这样寻址范围就变大了
+寄存器(直接)寻址#A为寄存器编号，访问的是寄存器，寄存器存EA
+寄存器间接寻址#隐含寻址#这实际是指的是隐含的操作数寻址
+立即(数)寻址#操作数直接给出了，A不代表地址，就代表操作数本身
+（一般会用一个#来标识）
+相对寻址#相对于PC的偏移量
+这里的PC是加了之和的，即相对于下一条指令的地址
+适合挪动循环代码在程序中的位置时用
+基址寻址#相对于基址寄存器BR, base register的内容
+可能计算机没有专用的BR，用通用寄存器代替
+BR内容是操作系统管理的，一般是程序段的起始
+变址寻址#变址寄存器IX, index register的内容&#43;A（严格来说是IX相对于A）
+用户就可以修改IX
+面向用户，适合循环程序，主要用于数组：A为数组首地址
+基址变址复合：BR&#43;AX为基地址
+IX为偏移量
+堆栈寻址#堆栈操作，操作数存在堆栈中，隐含使用堆栈指针寄存器SP
+SP指向栈顶
+硬堆栈：存在寄存器 软堆栈：存在主存 出栈：SP指向栈顶，读元素">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="4.2 寻址方式" />
+<meta property="og:description" content="寻址方式#寻指令#永远是通过PC指向下一条要执行的指令
+顺序寻址#PC不一定是每次&#43;1
+如果是按字编址且指令字长=存储字长的话才是&#43;1
+而如果是按字节编址，两个字节的指令字长，每次是&#43;2
+而如果是变指令字长就更复杂了：需要先读入一个字判断出指令字长
+但是依然会说PC&#43;1，这里的1指的是1个指令字长
+跳跃寻址#通过本次指令告诉计算方式，修改PC
+具体来说，当取出一条转移指令，仍然会PC&#43;1，执行后PC被更改（它这个指令的行为就是修改PC）
+寻数据#由地址码确定真实的物理地址(有效地址EA)
+对地址码有不同的解读方式，地址码包括寻址特征位和形式地址A
+直接寻址#A即为绝对地址，$EA=A$
+访存：取指令1次，执行（找数据）1次，(结果存放在寄存器中不算)
+寻址范围小，且不容易随地址变化而变化
+间接寻址#A是存放有效地址的存储单元的地址，即$EA=(A)$
+访存：取1次，找数据2次
+甚至还可以是多级的：
+这样寻址范围就变大了
+寄存器(直接)寻址#A为寄存器编号，访问的是寄存器，寄存器存EA
+寄存器间接寻址#隐含寻址#这实际是指的是隐含的操作数寻址
+立即(数)寻址#操作数直接给出了，A不代表地址，就代表操作数本身
+（一般会用一个#来标识）
+相对寻址#相对于PC的偏移量
+这里的PC是加了之和的，即相对于下一条指令的地址
+适合挪动循环代码在程序中的位置时用
+基址寻址#相对于基址寄存器BR, base register的内容
+可能计算机没有专用的BR，用通用寄存器代替
+BR内容是操作系统管理的，一般是程序段的起始
+变址寻址#变址寄存器IX, index register的内容&#43;A（严格来说是IX相对于A）
+用户就可以修改IX
+面向用户，适合循环程序，主要用于数组：A为数组首地址
+基址变址复合：BR&#43;AX为基地址
+IX为偏移量
+堆栈寻址#堆栈操作，操作数存在堆栈中，隐含使用堆栈指针寄存器SP
+SP指向栈顶
+硬堆栈：存在寄存器 软堆栈：存在主存 出栈：SP指向栈顶，读元素" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/command/%E6%8C%87%E4%BB%A4%E5%AF%BB%E5%9D%80/" /><meta property="article:section" content="command" />
+
+
+<title>4.2 寻址方式 | Computer Organization</title>
+<link rel="manifest" href="/computer_organization/manifest.json">
+<link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_organization/flexsearch.min.js"></script>
+  <script defer src="/computer_organization/en.search.min.e8d871935c7d5b98cf0a86359e617f79aea1a45bd788c632f5afc124b47b3f72.js" integrity="sha256-6Nhxk1x9W5jPCoY1nmF/ea6hpFvXiMYy9a/BJLR7P3I=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_organization/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/computer_organization_logo.png" alt="Logo" /><span>Computer Organization</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/introduction/" class="">第一章 绪论</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/" class="">第二章 编码</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%A1%A8%E7%A4%BA/" class="">2.1 整数和定点小数编码</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
+    <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
+      <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/" class="">加减</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/" class="">移位</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E4%B9%98%E9%99%A4/" class="">乘除</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%85%B6%E5%AE%83/" class="">其它</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/" class="">第三章 存储系统</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98/" class="">3.1 主存</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98%E4%B8%8Ecpu%E8%BF%9E%E6%8E%A5/" class="">3.2 主存与CPU连接</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E5%A4%96%E5%AD%98/" class="">3.3 外存</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/cache/" class="">3.4 cache</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8/" class="">3.5 虚拟存储器</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/" class="">第四章 指令系统</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F/" class="">4.1 指令格式</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/%E6%8C%87%E4%BB%A4%E5%AF%BB%E5%9D%80/" class="active">4.2 寻址方式</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/%E6%9C%BA%E5%99%A8%E7%BA%A7%E8%A1%A8%E7%A4%BA/" class="">4.3 机器级表示</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/cpu/" class="">第五章 中央处理器</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/" class="">第六章 总线</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/io/" class="">第七章 IO系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_organization"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>4.2 寻址方式</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_organization/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#寻指令">寻指令</a>
+      <ul>
+        <li><a href="#顺序寻址">顺序寻址</a></li>
+        <li><a href="#跳跃寻址">跳跃寻址</a></li>
+      </ul>
+    </li>
+    <li><a href="#寻数据">寻数据</a>
+      <ul>
+        <li><a href="#直接寻址">直接寻址</a></li>
+        <li><a href="#间接寻址">间接寻址</a></li>
+        <li><a href="#寄存器直接寻址">寄存器(直接)寻址</a></li>
+        <li><a href="#寄存器间接寻址">寄存器间接寻址</a></li>
+        <li><a href="#隐含寻址">隐含寻址</a></li>
+        <li><a href="#立即数寻址">立即(数)寻址</a></li>
+        <li><a href="#相对寻址">相对寻址</a></li>
+        <li><a href="#基址寻址">基址寻址</a></li>
+        <li><a href="#变址寻址">变址寻址</a></li>
+        <li><a href="#堆栈寻址">堆栈寻址</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="寻址方式">
+  寻址方式
+  <a class="anchor" href="#%e5%af%bb%e5%9d%80%e6%96%b9%e5%bc%8f">#</a>
+</h1>
+<h2 id="寻指令">
+  寻指令
+  <a class="anchor" href="#%e5%af%bb%e6%8c%87%e4%bb%a4">#</a>
+</h2>
+<p>永远是通过PC指向下一条要执行的指令</p>
+<h3 id="顺序寻址">
+  顺序寻址
+  <a class="anchor" href="#%e9%a1%ba%e5%ba%8f%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>PC不一定是每次+1</p>
+<div class="book-columns flex flex-wrap">
+
+  <div class="flex-even markdown-inner">
+    如果是按字编址且指令字长=存储字长的话才是+1</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716104521617.png" alt="image-20230716104521617" style="zoom:80%;" />
+  </div>
+
+  <div class="flex-even markdown-inner">
+    而如果是按字节编址，两个字节的指令字长，每次是+2</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716104852672.png" alt="image-20230716104852672" style="zoom:80%;" />
+  </div>
+
+</div>
+
+<p>而如果是变指令字长就更复杂了：需要先读入一个字判断出指令字长</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716105248251.png" alt="image-20230716105248251" style="zoom:80%;" />
+<p>但是依然会说PC+<strong>1</strong>，这里的<strong>1</strong>指的是1个指令字长</p>
+<h3 id="跳跃寻址">
+  跳跃寻址
+  <a class="anchor" href="#%e8%b7%b3%e8%b7%83%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>通过本次指令告诉计算方式，修改PC</p>
+<p>具体来说，当取出一条转移指令，<u>仍然会PC+<strong>1</strong></u>，执行后PC被更改（它这个指令的行为就是修改PC）</p>
+<h2 id="寻数据">
+  寻数据
+  <a class="anchor" href="#%e5%af%bb%e6%95%b0%e6%8d%ae">#</a>
+</h2>
+<p>由地址码确定真实的物理地址(有效地址<code>EA</code>)</p>
+<p>对地址码有不同的解读方式，地址码包括寻址特征位和形式地址<code>A</code></p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716110423499.png" alt="image-20230716110423499" style="zoom:67%;" />
+<h3 id="直接寻址">
+  直接寻址
+  <a class="anchor" href="#%e7%9b%b4%e6%8e%a5%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>A即为绝对地址，$EA=A$</p>
+<p>访存：取指令1次，执行（找数据）1次，(结果存放在寄存器中不算)</p>
+<p>寻址范围小，且不容易随地址变化而变化</p>
+<h3 id="间接寻址">
+  间接寻址
+  <a class="anchor" href="#%e9%97%b4%e6%8e%a5%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>A是存放有效地址的存储单元的地址，即$EA=(A)$</p>
+<p>访存：取1次，找数据2次</p>
+<p>甚至还可以是多级的：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716111047622.png" alt="image-20230716111047622" style="zoom: 80%;" />
+<p>这样寻址范围就变大了</p>
+<h3 id="寄存器直接寻址">
+  寄存器(直接)寻址
+  <a class="anchor" href="#%e5%af%84%e5%ad%98%e5%99%a8%e7%9b%b4%e6%8e%a5%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>A为寄存器编号，访问的是寄存器，寄存器存EA</p>
+<h3 id="寄存器间接寻址">
+  寄存器间接寻址
+  <a class="anchor" href="#%e5%af%84%e5%ad%98%e5%99%a8%e9%97%b4%e6%8e%a5%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<h3 id="隐含寻址">
+  隐含寻址
+  <a class="anchor" href="#%e9%9a%90%e5%90%ab%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>这实际是指的是隐含的操作数寻址</p>
+<h3 id="立即数寻址">
+  立即(数)寻址
+  <a class="anchor" href="#%e7%ab%8b%e5%8d%b3%e6%95%b0%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>操作数直接给出了，A不代表地址，就代表操作数本身</p>
+<p>（一般会用一个<code>#</code>来标识）</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716111640757.png" alt="image-20230716111640757" style="zoom:67%;" />
+<h3 id="相对寻址">
+  相对寻址
+  <a class="anchor" href="#%e7%9b%b8%e5%af%b9%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>相对于PC的偏移量</p>
+<p>这里的PC是加了之和的，即相对于下一条指令的地址</p>
+<p>适合挪动循环代码在程序中的位置时用</p>
+<h3 id="基址寻址">
+  基址寻址
+  <a class="anchor" href="#%e5%9f%ba%e5%9d%80%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>相对于基址寄存器<code>BR, base register</code>的内容</p>
+<p>可能计算机没有专用的BR，用通用寄存器代替</p>
+<p>BR内容是操作系统管理的，一般是程序段的起始</p>
+<h3 id="变址寻址">
+  变址寻址
+  <a class="anchor" href="#%e5%8f%98%e5%9d%80%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>变址寄存器<code>IX, index register</code>的内容+A（严格来说是IX相对于A）</p>
+<p>用户就可以修改IX</p>
+<p>面向用户，适合循环程序，主要用于数组：A为数组首地址</p>
+<p>基址变址复合：BR+AX为基地址</p>
+<p>IX为偏移量</p>
+<h3 id="堆栈寻址">
+  堆栈寻址
+  <a class="anchor" href="#%e5%a0%86%e6%a0%88%e5%af%bb%e5%9d%80">#</a>
+</h3>
+<p>堆栈操作，操作数存在堆栈中，隐含使用堆栈指针寄存器SP</p>
+<p>SP指向栈顶</p>
+<ul>
+<li>硬堆栈：存在寄存器</li>
+<li>软堆栈：存在主存</li>
+</ul>
+<p>出栈：SP指向栈顶，读元素</p>
+<p>入栈：SP先加1再写入元素</p>
+<p>这些也是系统完成的</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#寻指令">寻指令</a>
+      <ul>
+        <li><a href="#顺序寻址">顺序寻址</a></li>
+        <li><a href="#跳跃寻址">跳跃寻址</a></li>
+      </ul>
+    </li>
+    <li><a href="#寻数据">寻数据</a>
+      <ul>
+        <li><a href="#直接寻址">直接寻址</a></li>
+        <li><a href="#间接寻址">间接寻址</a></li>
+        <li><a href="#寄存器直接寻址">寄存器(直接)寻址</a></li>
+        <li><a href="#寄存器间接寻址">寄存器间接寻址</a></li>
+        <li><a href="#隐含寻址">隐含寻址</a></li>
+        <li><a href="#立即数寻址">立即(数)寻址</a></li>
+        <li><a href="#相对寻址">相对寻址</a></li>
+        <li><a href="#基址寻址">基址寻址</a></li>
+        <li><a href="#变址寻址">变址寻址</a></li>
+        <li><a href="#堆栈寻址">堆栈寻址</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

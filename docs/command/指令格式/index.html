@@ -3,22 +3,72 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="数据的表示和运算#进位计数
-进制转换：
-二进制与8进制、16进制（三位，四位一组） 10进制转： 整数部分：除K取余 小数部分：乘K取整 真值：带正负的数
-机器数：数字化后的真值">
+<meta name="description" content="指令格式#这几个分类依据：
+地址码数目#零指令：可能是不需操作数的指令，也可能只是不需要显示给出的（堆栈）
+一地址：同样可能是单操作数，也可能是隐含在某寄存器中，实际还是两个操作数
+二地址：目的操作数也同时是结果保存的地方
+三地址：结果另外保存
+四地址：第4个是下一步指令的地址，进行跳转
+这里我们说“地址码的数目”指的是这个意思，而非位数
+另外还要注意别混淆 指令 和 操作码
+指令长度#机器字长：一次整数运算能处理的位数
+存储字长：存储单元的长度
+指令字长：指令的长度
+半字长指令、单字长指令、双字长指令，指相对于机器字长
+指令字长可变的，指令系统分定长指令字结构合变长指令字结构
+操作码长度#按照操作码的长度可变性（不是指令的长度可变性）分类
+定长操作码：n位代表$2^n$种不同的指令
+可变长操作码
+扩展操作码指令格式#指令字长固定&#43;操作码长度可变
+1111留作扩展操作码使用
+​	能够通过检查判断出是几地址
+​	为1111说明还有，不是则说明操作码到此为止
+这样保证了短码不会成为长码的前缀
+先通过地址码位数固定操作码的位数来看
+操作类型#数据传送
+算术和逻辑运算
+移位
+转移：改变程序执行流
+输入输出：和IO端口的数据交换">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="第二章 编码" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/" />
-<title>第二章 编码 | Computer Organization</title>
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="4.1 指令格式" />
+<meta property="og:description" content="指令格式#这几个分类依据：
+地址码数目#零指令：可能是不需操作数的指令，也可能只是不需要显示给出的（堆栈）
+一地址：同样可能是单操作数，也可能是隐含在某寄存器中，实际还是两个操作数
+二地址：目的操作数也同时是结果保存的地方
+三地址：结果另外保存
+四地址：第4个是下一步指令的地址，进行跳转
+这里我们说“地址码的数目”指的是这个意思，而非位数
+另外还要注意别混淆 指令 和 操作码
+指令长度#机器字长：一次整数运算能处理的位数
+存储字长：存储单元的长度
+指令字长：指令的长度
+半字长指令、单字长指令、双字长指令，指相对于机器字长
+指令字长可变的，指令系统分定长指令字结构合变长指令字结构
+操作码长度#按照操作码的长度可变性（不是指令的长度可变性）分类
+定长操作码：n位代表$2^n$种不同的指令
+可变长操作码
+扩展操作码指令格式#指令字长固定&#43;操作码长度可变
+1111留作扩展操作码使用
+​	能够通过检查判断出是几地址
+​	为1111说明还有，不是则说明操作码到此为止
+这样保证了短码不会成为长码的前缀
+先通过地址码位数固定操作码的位数来看
+操作类型#数据传送
+算术和逻辑运算
+移位
+转移：改变程序执行流
+输入输出：和IO端口的数据交换" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/command/%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F/" /><meta property="article:section" content="command" />
+
+
+<title>4.1 指令格式 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/computer_organization/flexsearch.min.js"></script>
   <script defer src="/computer_organization/en.search.min.e8d871935c7d5b98cf0a86359e617f79aea1a45bd788c632f5afc124b47b3f72.js" integrity="sha256-6Nhxk1x9W5jPCoY1nmF/ea6hpFvXiMYy9a/BJLR7P3I=" crossorigin="anonymous"></script>
-<link rel="alternate" type="application/rss+xml" href="https://zvictorliu.github.io/computer_organization/encode/index.xml" title="Computer Organization" />
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -90,7 +140,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/" class="active">第二章 编码</a>
+    <a href="/computer_organization/encode/" class="">第二章 编码</a>
   
 
           
@@ -303,7 +353,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/command/%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F/" class="">4.1 指令格式</a>
+    <a href="/computer_organization/command/%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F/" class="active">4.1 指令格式</a>
   
 
         </li>
@@ -448,7 +498,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>第二章 编码</strong>
+  <strong>4.1 指令格式</strong>
 
   <label for="toc-control">
     
@@ -463,7 +513,18 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#地址码数目">地址码数目</a></li>
+    <li><a href="#指令长度">指令长度</a></li>
+    <li><a href="#操作码长度">操作码长度</a>
+      <ul>
+        <li><a href="#扩展操作码指令格式">扩展操作码指令格式</a></li>
+      </ul>
+    </li>
+    <li><a href="#操作类型">操作类型</a></li>
+  </ul>
+</nav>
 
 
 
@@ -474,33 +535,85 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="数据的表示和运算">
-  数据的表示和运算
-  <a class="anchor" href="#%e6%95%b0%e6%8d%ae%e7%9a%84%e8%a1%a8%e7%a4%ba%e5%92%8c%e8%bf%90%e7%ae%97">#</a>
+  <article class="markdown"><h1 id="指令格式">
+  指令格式
+  <a class="anchor" href="#%e6%8c%87%e4%bb%a4%e6%a0%bc%e5%bc%8f">#</a>
 </h1>
+<p>这几个分类依据：</p>
+<h2 id="地址码数目">
+  地址码数目
+  <a class="anchor" href="#%e5%9c%b0%e5%9d%80%e7%a0%81%e6%95%b0%e7%9b%ae">#</a>
+</h2>
 <ul>
 <li>
-<p>进位计数</p>
+<p>零指令：可能是不需操作数的指令，也可能只是不需要显示给出的（堆栈）</p>
 </li>
 <li>
-<p>进制转换：</p>
+<p>一地址：同样可能是单操作数，也可能是隐含在某寄存器中，实际还是两个操作数</p>
+</li>
+<li>
+<p>二地址：目的操作数也同时是结果保存的地方</p>
+</li>
+<li>
+<p>三地址：结果另外保存</p>
+</li>
+<li>
+<p>四地址：第4个是下一步指令的地址，进行跳转</p>
+</li>
+</ul>
+<p>这里我们说“地址码的数目”指的是这个意思，而非位数</p>
+<p>另外还要注意别混淆 指令 和 操作码</p>
+<h2 id="指令长度">
+  指令长度
+  <a class="anchor" href="#%e6%8c%87%e4%bb%a4%e9%95%bf%e5%ba%a6">#</a>
+</h2>
 <ul>
-<li>二进制与8进制、16进制（三位，四位一组）</li>
-<li>10进制转：
+<li>
+<p>机器字长：一次整数运算能处理的位数</p>
+</li>
+<li>
+<p>存储字长：存储单元的长度</p>
+</li>
+<li>
+<p>指令字长：指令的长度</p>
+<p>半字长指令、单字长指令、双字长指令，指相对于机器字长</p>
+<p>指令字长可变的，指令系统分定长指令字结构合变长指令字结构</p>
+</li>
+</ul>
+<h2 id="操作码长度">
+  操作码长度
+  <a class="anchor" href="#%e6%93%8d%e4%bd%9c%e7%a0%81%e9%95%bf%e5%ba%a6">#</a>
+</h2>
+<p>按照操作码的长度可变性（不是指令的长度可变性）分类</p>
 <ul>
-<li>整数部分：除K取余</li>
-<li>小数部分：乘K取整</li>
-</ul>
-</li>
-</ul>
+<li>
+<p>定长操作码：n位代表$2^n$种不同的指令</p>
 </li>
 <li>
-<p>真值：带正负的数</p>
-</li>
-<li>
-<p>机器数：数字化后的真值</p>
+<p>可变长操作码</p>
 </li>
 </ul>
+<h3 id="扩展操作码指令格式">
+  扩展操作码指令格式
+  <a class="anchor" href="#%e6%89%a9%e5%b1%95%e6%93%8d%e4%bd%9c%e7%a0%81%e6%8c%87%e4%bb%a4%e6%a0%bc%e5%bc%8f">#</a>
+</h3>
+<p>指令字长固定+操作码长度可变</p>
+<p>1111留作扩展操作码使用</p>
+<p>​	能够通过检查判断出是几地址</p>
+<p>​	为1111说明还有，不是则说明操作码到此为止</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716103803339.png" alt="image-20230716103803339" style="zoom:67%;" />
+<p>这样保证了短码不会成为长码的前缀</p>
+<p><em>先通过地址码位数固定操作码的位数来看</em></p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716104254491.png" alt="image-20230716104254491" style="zoom:67%;" />
+<h2 id="操作类型">
+  操作类型
+  <a class="anchor" href="#%e6%93%8d%e4%bd%9c%e7%b1%bb%e5%9e%8b">#</a>
+</h2>
+<p>数据传送</p>
+<p>算术和逻辑运算</p>
+<p>移位</p>
+<p>转移：改变程序执行流</p>
+<p>输入输出：和IO端口的数据交换</p>
 </article>
  
       
@@ -579,7 +692,18 @@ code.has-jax {
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#地址码数目">地址码数目</a></li>
+    <li><a href="#指令长度">指令长度</a></li>
+    <li><a href="#操作码长度">操作码长度</a>
+      <ul>
+        <li><a href="#扩展操作码指令格式">扩展操作码指令格式</a></li>
+      </ul>
+    </li>
+    <li><a href="#操作类型">操作类型</a></li>
+  </ul>
+</nav>
 
 
  

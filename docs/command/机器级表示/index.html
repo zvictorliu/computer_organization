@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="程序的机器级代码表示#程序的高级语言和汇编语言和机器码的对应关系
+汇编语言：一般是x86
+x86汇编语言#x86: Intel 8086以及后面出来的兼容8086的CPU所用的指令集
+寄存器#E = Extended = 32bit
+前4个寄存器可以只使用起低16位：AX BX CX DX
+而这16位也可以单独使用高8位和低8位
+Accumulator
+Base Register
+Count Register
+Data Register
+而变址寄存器 ESI EDI和堆栈寄存器 EBP BSP只能是32bit
+格式#格式有 AT&amp;T格式(UNIX/Linux) 和 Intel格式(Windows)
+AT&amp;T格式和 Intel格式的区别注意一个是 s d另一个是d s
+表示长度修饰：
+byte ptr [xxx]: 8bit
+word ptr [xxx]: 16bit
+dword ptr [xxx]: 32bit
+即表示以所指地方开始的8/16/32位作为一个整体进行处理
+[ ]就表示操作数在主存中而不在寄存器中，xxx被理解为主存地址
+所以：
+xxx是数字：表示直接寻址 xxx是寄存器名：表示寄存器间接寻址，寄存器内是主存地址 如果没有修饰，默认是32bit
+xxx还可以是个表达式，表示地址的偏移，算出来的结果才是最终地址
+常见指令#数据传送：mov	push/pop 算术运算：add/sub mul/div imul/idiv(有符号) 逻辑运算：and/or/xor/neg shl/shr(逻辑左右移) 控制流：jmp j&lt;condition&gt;(最后一个运算结果的标志位) cmp/test call/ret 在x86中不允许两个操作数同时来自主存，所以一般要先调入寄存器">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="4.3 机器级表示" />
+<meta property="og:description" content="程序的机器级代码表示#程序的高级语言和汇编语言和机器码的对应关系
+汇编语言：一般是x86
+x86汇编语言#x86: Intel 8086以及后面出来的兼容8086的CPU所用的指令集
+寄存器#E = Extended = 32bit
+前4个寄存器可以只使用起低16位：AX BX CX DX
+而这16位也可以单独使用高8位和低8位
+Accumulator
+Base Register
+Count Register
+Data Register
+而变址寄存器 ESI EDI和堆栈寄存器 EBP BSP只能是32bit
+格式#格式有 AT&amp;T格式(UNIX/Linux) 和 Intel格式(Windows)
+AT&amp;T格式和 Intel格式的区别注意一个是 s d另一个是d s
+表示长度修饰：
+byte ptr [xxx]: 8bit
+word ptr [xxx]: 16bit
+dword ptr [xxx]: 32bit
+即表示以所指地方开始的8/16/32位作为一个整体进行处理
+[ ]就表示操作数在主存中而不在寄存器中，xxx被理解为主存地址
+所以：
+xxx是数字：表示直接寻址 xxx是寄存器名：表示寄存器间接寻址，寄存器内是主存地址 如果没有修饰，默认是32bit
+xxx还可以是个表达式，表示地址的偏移，算出来的结果才是最终地址
+常见指令#数据传送：mov	push/pop 算术运算：add/sub mul/div imul/idiv(有符号) 逻辑运算：and/or/xor/neg shl/shr(逻辑左右移) 控制流：jmp j&lt;condition&gt;(最后一个运算结果的标志位) cmp/test call/ret 在x86中不允许两个操作数同时来自主存，所以一般要先调入寄存器" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/command/%E6%9C%BA%E5%99%A8%E7%BA%A7%E8%A1%A8%E7%A4%BA/" /><meta property="article:section" content="command" />
+
+
+<title>4.3 机器级表示 | Computer Organization</title>
+<link rel="manifest" href="/computer_organization/manifest.json">
+<link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
+  <script defer src="/computer_organization/flexsearch.min.js"></script>
+  <script defer src="/computer_organization/en.search.min.e8d871935c7d5b98cf0a86359e617f79aea1a45bd788c632f5afc124b47b3f72.js" integrity="sha256-6Nhxk1x9W5jPCoY1nmF/ea6hpFvXiMYy9a/BJLR7P3I=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/computer_organization/"><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/computer_organization_logo.png" alt="Logo" /><span>Computer Organization</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/introduction/" class="">第一章 绪论</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/" class="">第二章 编码</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%A1%A8%E7%A4%BA/" class="">2.1 整数和定点小数编码</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-48ade03bf425a01da35661b38239e150" class="toggle"  />
+    <label for="section-48ade03bf425a01da35661b38239e150" class="flex justify-between">
+      <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/" class="">2.3 运算方法和电路</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/" class="">加减</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/" class="">移位</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E4%B9%98%E9%99%A4/" class="">乘除</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%85%B6%E5%AE%83/" class="">其它</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/" class="">第三章 存储系统</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98/" class="">3.1 主存</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E4%B8%BB%E5%AD%98%E4%B8%8Ecpu%E8%BF%9E%E6%8E%A5/" class="">3.2 主存与CPU连接</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E5%A4%96%E5%AD%98/" class="">3.3 外存</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/cache/" class="">3.4 cache</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/mem/%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8/" class="">3.5 虚拟存储器</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/" class="">第四章 指令系统</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F/" class="">4.1 指令格式</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/%E6%8C%87%E4%BB%A4%E5%AF%BB%E5%9D%80/" class="">4.2 寻址方式</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/command/%E6%9C%BA%E5%99%A8%E7%BA%A7%E8%A1%A8%E7%A4%BA/" class="active">4.3 机器级表示</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/cpu/" class="">第五章 中央处理器</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/" class="">第六章 总线</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/io/" class="">第七章 IO系统</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/zvictorliu/computer_organization"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>4.3 机器级表示</strong>
+
+  <label for="toc-control">
+    
+    <img src="/computer_organization/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#x86汇编语言">x86汇编语言</a>
+      <ul>
+        <li><a href="#寄存器">寄存器</a></li>
+        <li><a href="#格式">格式</a></li>
+        <li><a href="#常见指令">常见指令</a></li>
+      </ul>
+    </li>
+    <li><a href="#选择语句实现">选择语句实现</a></li>
+    <li><a href="#循环语句实现">循环语句实现</a></li>
+    <li><a href="#过程调用函数调用">过程调用（函数调用）</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="程序的机器级代码表示">
+  程序的机器级代码表示
+  <a class="anchor" href="#%e7%a8%8b%e5%ba%8f%e7%9a%84%e6%9c%ba%e5%99%a8%e7%ba%a7%e4%bb%a3%e7%a0%81%e8%a1%a8%e7%a4%ba">#</a>
+</h1>
+<p>程序的高级语言和汇编语言和机器码的对应关系</p>
+<p>汇编语言：一般是<code>x86</code></p>
+<h2 id="x86汇编语言">
+  x86汇编语言
+  <a class="anchor" href="#x86%e6%b1%87%e7%bc%96%e8%af%ad%e8%a8%80">#</a>
+</h2>
+<p>x86: Intel 8086以及后面出来的兼容8086的CPU所用的指令集</p>
+<h3 id="寄存器">
+  寄存器
+  <a class="anchor" href="#%e5%af%84%e5%ad%98%e5%99%a8">#</a>
+</h3>
+<p>E = Extended = 32bit</p>
+<p>前4个寄存器可以只使用起低16位：AX BX CX DX</p>
+<p>而这16位也可以单独使用高8位和低8位</p>
+<p>Accumulator</p>
+<p>Base Register</p>
+<p>Count Register</p>
+<p>Data Register</p>
+<p>而变址寄存器 ESI EDI和堆栈寄存器 EBP BSP只能是32bit</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716132624540.png" alt="image-20230716132624540" style="zoom:67%;" />
+<h3 id="格式">
+  格式
+  <a class="anchor" href="#%e6%a0%bc%e5%bc%8f">#</a>
+</h3>
+<p>格式有 AT&amp;T格式(UNIX/Linux) 和 Intel格式(Windows)</p>
+<p><details open><summary>AT&amp;T格式和 Intel格式的区别</summary>
+  <div class="markdown-inner">
+    <img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716134002393.png" alt="image-20230716134002393" style="zoom:80%;" />
+  </div>
+</details>
+
+注意一个是 s d另一个是d s</p>
+<p>表示长度修饰：</p>
+<ul>
+<li>
+<p>byte ptr [xxx]: 8bit</p>
+</li>
+<li>
+<p>word ptr [xxx]: 16bit</p>
+</li>
+<li>
+<p>dword ptr [xxx]: 32bit</p>
+</li>
+</ul>
+<p>即表示以所指地方开始的8/16/32位作为一个整体进行处理</p>
+<p><code>[ ]</code>就表示操作数在主存中而不在寄存器中，xxx被理解为主存地址</p>
+<p>所以：</p>
+<ul>
+<li>xxx是数字：表示直接寻址</li>
+<li>xxx是寄存器名：表示寄存器间接寻址，寄存器内是主存地址</li>
+</ul>
+<p>如果没有修饰，默认是32bit</p>
+<p>xxx还可以是个表达式，表示地址的偏移，算出来的结果才是最终地址</p>
+<h3 id="常见指令">
+  常见指令
+  <a class="anchor" href="#%e5%b8%b8%e8%a7%81%e6%8c%87%e4%bb%a4">#</a>
+</h3>
+<ul>
+<li>数据传送：<code>mov</code>	<code>push/pop</code></li>
+<li>算术运算：<code>add/sub</code> <code>mul/div</code> <code>imul/idiv</code>(有符号)</li>
+<li>逻辑运算：<code>and/or/xor/neg</code> <code>shl/shr</code>(逻辑左右移)</li>
+<li>控制流：<code>jmp</code> <code>j&lt;condition&gt;</code>(最后一个运算结果的标志位) <code>cmp/test</code> <code>call/ret</code></li>
+</ul>
+<p>在x86中<u>不允许两个操作数同时来自主存</u>，所以一般要先调入寄存器</p>
+<h2 id="选择语句实现">
+  选择语句实现
+  <a class="anchor" href="#%e9%80%89%e6%8b%a9%e8%af%ad%e5%8f%a5%e5%ae%9e%e7%8e%b0">#</a>
+</h2>
+<p>程序计算器<code>PC</code>也叫指令寄存器<code>IP</code></p>
+<p>标号锚定位置：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716140056401.png" alt="image-20230716140056401" style="zoom:67%;" />
+<h2 id="循环语句实现">
+  循环语句实现
+  <a class="anchor" href="#%e5%be%aa%e7%8e%af%e8%af%ad%e5%8f%a5%e5%ae%9e%e7%8e%b0">#</a>
+</h2>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716141137819.png" alt="image-20230716141137819" style="zoom:80%;" />
+<p>此外还有<code>loop</code>指令，使用循环计数器<code>ECX</code>，自动&ndash;</p>
+<h2 id="过程调用函数调用">
+  过程调用（函数调用）
+  <a class="anchor" href="#%e8%bf%87%e7%a8%8b%e8%b0%83%e7%94%a8%e5%87%bd%e6%95%b0%e8%b0%83%e7%94%a8">#</a>
+</h2>
+<p>用到栈，每个函数有栈帧Stack Frame，保存局部变量和函数调用的相关信息</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716141710334.png" alt="image-20230716141710334" style="zoom:67%;" />
+<p>正在运行的函数位于栈顶</p>
+<p>不过栈是从高地址到低地址的：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716142046040.png" alt="image-20230716142046040" style="zoom:67%;" />
+<p>EBP和ESP就是指向栈帧的底和顶，来表示栈帧的范围</p>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716142219932.png" alt="image-20230716142219932" /></p>
+<p>栈的访问：</p>
+<p>​	push让esp-4，然后把内容压入；pop先出栈复制到指定位置，再esp+4</p>
+<p>​	这只能对栈顶操作，但对这两个寄存器用户是可操作的，可以用mov</p>
+<p>栈帧的切换：</p>
+<p>​	call先把IP旧值压入栈（esp也随之修改，相对于push)</p>
+<p>​	调用：压入ebp的值，将esp设置为当前esp的内容，然后程序跳转后可能会再压入数据</p>
+<p>​	<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716143434617.png" alt="image-20230716143434617" style="zoom:67%;" /></p>
+<p>​	退出：让esp指向栈帧底部，再pop一下写入ebp，此时esp指向IP旧值，此时ret再修改IP</p>
+<p>在函数调用时会例行执行这些操作</p>
+<p>这些操作也可合并为 enter和leave指令</p>
+<p>栈底就是上一层的栈帧的基地址</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230716144437847.png" alt="image-20230716144437847" style="zoom:67%;" />
+<p>参数传递：</p>
+<p>EAX寄存器</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+
+
+
+<script type="text/javascript"
+        async
+        src="https://cdn.bootcss.com/mathjax/2.7.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[\[','\]\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+
+MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+});
+</script>
+
+<style>
+code.has-jax {
+    font: inherit;
+    font-size: 100%;
+    background: inherit;
+    border: inherit;
+    color: #515151;
+}
+</style>
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#x86汇编语言">x86汇编语言</a>
+      <ul>
+        <li><a href="#寄存器">寄存器</a></li>
+        <li><a href="#格式">格式</a></li>
+        <li><a href="#常见指令">常见指令</a></li>
+      </ul>
+    </li>
+    <li><a href="#选择语句实现">选择语句实现</a></li>
+    <li><a href="#循环语句实现">循环语句实现</a></li>
+    <li><a href="#过程调用函数调用">过程调用（函数调用）</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -6,5 +6,114 @@
     <description>Recent content in 第四章 指令系统 on Computer Organization</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language><atom:link href="https://zvictorliu.github.io/computer_organization/command/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>4.1 指令格式</title>
+      <link>https://zvictorliu.github.io/computer_organization/command/%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/command/%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F/</guid>
+      <description>指令格式#这几个分类依据：
+地址码数目#零指令：可能是不需操作数的指令，也可能只是不需要显示给出的（堆栈）
+一地址：同样可能是单操作数，也可能是隐含在某寄存器中，实际还是两个操作数
+二地址：目的操作数也同时是结果保存的地方
+三地址：结果另外保存
+四地址：第4个是下一步指令的地址，进行跳转
+这里我们说“地址码的数目”指的是这个意思，而非位数
+另外还要注意别混淆 指令 和 操作码
+指令长度#机器字长：一次整数运算能处理的位数
+存储字长：存储单元的长度
+指令字长：指令的长度
+半字长指令、单字长指令、双字长指令，指相对于机器字长
+指令字长可变的，指令系统分定长指令字结构合变长指令字结构
+操作码长度#按照操作码的长度可变性（不是指令的长度可变性）分类
+定长操作码：n位代表$2^n$种不同的指令
+可变长操作码
+扩展操作码指令格式#指令字长固定+操作码长度可变
+1111留作扩展操作码使用
+​	能够通过检查判断出是几地址
+​	为1111说明还有，不是则说明操作码到此为止
+这样保证了短码不会成为长码的前缀
+先通过地址码位数固定操作码的位数来看
+操作类型#数据传送
+算术和逻辑运算
+移位
+转移：改变程序执行流
+输入输出：和IO端口的数据交换</description>
+    </item>
+    
+    <item>
+      <title>4.2 寻址方式</title>
+      <link>https://zvictorliu.github.io/computer_organization/command/%E6%8C%87%E4%BB%A4%E5%AF%BB%E5%9D%80/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/command/%E6%8C%87%E4%BB%A4%E5%AF%BB%E5%9D%80/</guid>
+      <description>寻址方式#寻指令#永远是通过PC指向下一条要执行的指令
+顺序寻址#PC不一定是每次+1
+如果是按字编址且指令字长=存储字长的话才是+1
+而如果是按字节编址，两个字节的指令字长，每次是+2
+而如果是变指令字长就更复杂了：需要先读入一个字判断出指令字长
+但是依然会说PC+1，这里的1指的是1个指令字长
+跳跃寻址#通过本次指令告诉计算方式，修改PC
+具体来说，当取出一条转移指令，仍然会PC+1，执行后PC被更改（它这个指令的行为就是修改PC）
+寻数据#由地址码确定真实的物理地址(有效地址EA)
+对地址码有不同的解读方式，地址码包括寻址特征位和形式地址A
+直接寻址#A即为绝对地址，$EA=A$
+访存：取指令1次，执行（找数据）1次，(结果存放在寄存器中不算)
+寻址范围小，且不容易随地址变化而变化
+间接寻址#A是存放有效地址的存储单元的地址，即$EA=(A)$
+访存：取1次，找数据2次
+甚至还可以是多级的：
+这样寻址范围就变大了
+寄存器(直接)寻址#A为寄存器编号，访问的是寄存器，寄存器存EA
+寄存器间接寻址#隐含寻址#这实际是指的是隐含的操作数寻址
+立即(数)寻址#操作数直接给出了，A不代表地址，就代表操作数本身
+（一般会用一个#来标识）
+相对寻址#相对于PC的偏移量
+这里的PC是加了之和的，即相对于下一条指令的地址
+适合挪动循环代码在程序中的位置时用
+基址寻址#相对于基址寄存器BR, base register的内容
+可能计算机没有专用的BR，用通用寄存器代替
+BR内容是操作系统管理的，一般是程序段的起始
+变址寻址#变址寄存器IX, index register的内容+A（严格来说是IX相对于A）
+用户就可以修改IX
+面向用户，适合循环程序，主要用于数组：A为数组首地址
+基址变址复合：BR+AX为基地址
+IX为偏移量
+堆栈寻址#堆栈操作，操作数存在堆栈中，隐含使用堆栈指针寄存器SP
+SP指向栈顶
+硬堆栈：存在寄存器 软堆栈：存在主存 出栈：SP指向栈顶，读元素</description>
+    </item>
+    
+    <item>
+      <title>4.3 机器级表示</title>
+      <link>https://zvictorliu.github.io/computer_organization/command/%E6%9C%BA%E5%99%A8%E7%BA%A7%E8%A1%A8%E7%A4%BA/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/command/%E6%9C%BA%E5%99%A8%E7%BA%A7%E8%A1%A8%E7%A4%BA/</guid>
+      <description>程序的机器级代码表示#程序的高级语言和汇编语言和机器码的对应关系
+汇编语言：一般是x86
+x86汇编语言#x86: Intel 8086以及后面出来的兼容8086的CPU所用的指令集
+寄存器#E = Extended = 32bit
+前4个寄存器可以只使用起低16位：AX BX CX DX
+而这16位也可以单独使用高8位和低8位
+Accumulator
+Base Register
+Count Register
+Data Register
+而变址寄存器 ESI EDI和堆栈寄存器 EBP BSP只能是32bit
+格式#格式有 AT&amp;amp;T格式(UNIX/Linux) 和 Intel格式(Windows)
+AT&amp;amp;T格式和 Intel格式的区别注意一个是 s d另一个是d s
+表示长度修饰：
+byte ptr [xxx]: 8bit
+word ptr [xxx]: 16bit
+dword ptr [xxx]: 32bit
+即表示以所指地方开始的8/16/32位作为一个整体进行处理
+[ ]就表示操作数在主存中而不在寄存器中，xxx被理解为主存地址
+所以：
+xxx是数字：表示直接寻址 xxx是寄存器名：表示寄存器间接寻址，寄存器内是主存地址 如果没有修饰，默认是32bit
+xxx还可以是个表达式，表示地址的偏移，算出来的结果才是最终地址
+常见指令#数据传送：mov	push/pop 算术运算：add/sub mul/div imul/idiv(有符号) 逻辑运算：and/or/xor/neg shl/shr(逻辑左右移) 控制流：jmp j&amp;lt;condition&amp;gt;(最后一个运算结果的标志位) cmp/test call/ret 在x86中不允许两个操作数同时来自主存，所以一般要先调入寄存器</description>
+    </item>
+    
   </channel>
 </rss>
