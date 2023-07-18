@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>5.3 控制器 on Computer Organization</title>
+    <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/</link>
+    <description>Recent content in 5.3 控制器 on Computer Organization</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language><atom:link href="https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E7%A1%AC%E5%B8%83%E7%BA%BF/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E7%A1%AC%E5%B8%83%E7%BA%BF/</guid>
+      <description>硬布线设计方式#分析每个阶段的微操作序列 选择CPU的控制方式（定长机器周期，内含3个节拍） 安排微操作时序 先后顺序不能随意更改 被控对象不同的微操作尽量放在同一个节拍完成 时间短的微操作尽量放在一个节拍内完成，按先后顺序一条龙完成 电路设计（根据逻辑表达式设计电路） 操作时间表 最简逻辑表达式 电路 这样硬件设计的叫做硬布线，很快但是如果需要扩充指令就需要重新搭电路</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E5%BE%AE%E7%A8%8B%E5%BA%8F/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E5%BE%AE%E7%A8%8B%E5%BA%8F/</guid>
+      <description>微程序设计方式#将微操作也进行程序化
+微指令序列构成一个微程序（一条微指令可能包含多个微命令，一个微命令对应一个微操作）
+在CPU出厂前，把所有指令的微程序存入一个控制器存储器中，CPU执行一个指令实际在执行其对应的微程序，包括一条条微指令
+这样可以减少电路的复杂性
+所以一条微指令的基本格式设计为：
+操作控制+顺序控制（下一条微指令的地址）
+工作原理#操作码送到微地址形成部件，确定对应微程序的位置
+主要是指令周期的几个阶段所用的微指令有很大重复性
+指令系统的不同指令至少有一个重复的微程序：都需要取指令，每条指令独特的在于其执行周期，而取指、间址、中断的微指令序列一般是一样的用的公同一个微程序（段）
+所以是$n$种机器指令对应至少$n+1$个微程序（段）
+但是“一条指令对应一个微程序”的说法也对，是把它们看作了一个整体
+微指令设计#如何根据微指令发出相应的微命令（控制信号）？
+格式应该如何设计？
+微命令可以相容互斥
+水平型：多个并行的微命令 垂直型：一条只能对应一个微命令 混合型：垂直型加上一点不那么多的混合 控制信号的形成：
+直接控制：一个比特位对应一个微命令 ​	字段直接编码：控制字段分段，每段译码发出控制信号，互斥的放在同一段内
+字段间接编码：两层译码
+地址：
+下地址直接指出（断定方式） 根据操作码形成 增量计数器法 (CMAR)+1 -&amp;gt; CMAR 分支转移 测试网络 硬件产生微程序入口地址 微程序控制单元的设计#指令的微操作序列 节拍安排 确定微指令格式 考虑如何读出微指令，如何转入下一个机器周期 取指周期的第一条微指令放的位置是固定的
+相比之下比硬布线要慢</description>
+    </item>
+    
+  </channel>
+</rss>

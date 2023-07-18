@@ -8,6 +8,15 @@
     <language>zh-CN</language><atom:link href="https://zvictorliu.github.io/computer_organization/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title></title>
+      <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E7%A1%AC%E5%B8%83%E7%BA%BF/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E7%A1%AC%E5%B8%83%E7%BA%BF/</guid>
+      <description>硬布线设计方式#分析每个阶段的微操作序列 选择CPU的控制方式（定长机器周期，内含3个节拍） 安排微操作时序 先后顺序不能随意更改 被控对象不同的微操作尽量放在同一个节拍完成 时间短的微操作尽量放在一个节拍内完成，按先后顺序一条龙完成 电路设计（根据逻辑表达式设计电路） 操作时间表 最简逻辑表达式 电路 这样硬件设计的叫做硬布线，很快但是如果需要扩充指令就需要重新搭电路</description>
+    </item>
+    
+    <item>
+      <title></title>
       <link>https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/%E5%8A%A0%E5%87%8F/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -128,6 +137,59 @@ SSD固态硬盘：在闪存的基础上还有了控制单元
     </item>
     
     <item>
+      <title>5.1 指令执行过程</title>
+      <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/cpu/%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/</guid>
+      <description>指令执行过程#指令周期#取、译码（很快）、执行，将译码也分在取指令周期内：
+CPU周期和CPU时钟周期不是一个意思
+CPU周期又叫机器周期，一个指令周期需要多个机器周期，一个多个机器周期需要多个时钟周期（又叫节拍），主频也是描述的这个
+不同指令的指令周期的长度可能是不同的：
+整个流程是：
+设置了几个触发器来判断处于哪个阶段，不同阶段的任务、理解不同
+取指周期#(PC) -&amp;gt; MAR
+CU发出读控制信号：1 -&amp;gt; R
+M(MAR) -&amp;gt; MDR，(MDR) -&amp;gt; IR
+CU发出控制信号，使得(PC)+1 -&amp;gt; PC
+间址周期#复制得到有效地址，并不取出操作数
+将地址码送入MAR，可以从IR中得到也可以从MDR中得到，Ad(IR) -&amp;gt; MAR CU发出读信号 &amp;hellip; （将有效地址送给地址码） 执行周期#不同指令的执行周期不同
+中断周期#执行完后都会进行中断检查，如有则执行中断程序
+SP存的是地址，SP-1后即为PC指要放入的地址
+(SP)-1 -&amp;gt; SP，(SP) -&amp;gt; MAR，1 -&amp;gt; W，(PC) -&amp;gt; MDR
+然后修改PC：向量地址 -&amp;gt; PC
+指令执行方案#单指令周期：串行执行，统一时间，木桶效应 多指令周期：不要求定长 流水线：没有冲突的硬件情况下，可以并行，交错一些阶段 </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E5%BE%AE%E7%A8%8B%E5%BA%8F/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E5%BE%AE%E7%A8%8B%E5%BA%8F/</guid>
+      <description>微程序设计方式#将微操作也进行程序化
+微指令序列构成一个微程序（一条微指令可能包含多个微命令，一个微命令对应一个微操作）
+在CPU出厂前，把所有指令的微程序存入一个控制器存储器中，CPU执行一个指令实际在执行其对应的微程序，包括一条条微指令
+这样可以减少电路的复杂性
+所以一条微指令的基本格式设计为：
+操作控制+顺序控制（下一条微指令的地址）
+工作原理#操作码送到微地址形成部件，确定对应微程序的位置
+主要是指令周期的几个阶段所用的微指令有很大重复性
+指令系统的不同指令至少有一个重复的微程序：都需要取指令，每条指令独特的在于其执行周期，而取指、间址、中断的微指令序列一般是一样的用的公同一个微程序（段）
+所以是$n$种机器指令对应至少$n+1$个微程序（段）
+但是“一条指令对应一个微程序”的说法也对，是把它们看作了一个整体
+微指令设计#如何根据微指令发出相应的微命令（控制信号）？
+格式应该如何设计？
+微命令可以相容互斥
+水平型：多个并行的微命令 垂直型：一条只能对应一个微命令 混合型：垂直型加上一点不那么多的混合 控制信号的形成：
+直接控制：一个比特位对应一个微命令 ​	字段直接编码：控制字段分段，每段译码发出控制信号，互斥的放在同一段内
+字段间接编码：两层译码
+地址：
+下地址直接指出（断定方式） 根据操作码形成 增量计数器法 (CMAR)+1 -&amp;gt; CMAR 分支转移 测试网络 硬件产生微程序入口地址 微程序控制单元的设计#指令的微操作序列 节拍安排 确定微指令格式 考虑如何读出微指令，如何转入下一个机器周期 取指周期的第一条微指令放的位置是固定的
+相比之下比硬布线要慢</description>
+    </item>
+    
+    <item>
       <title></title>
       <link>https://zvictorliu.github.io/computer_organization/encode/%E8%BF%90%E7%AE%97/%E7%A7%BB%E4%BD%8D/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -223,6 +285,25 @@ IX为偏移量
 堆栈寻址#堆栈操作，操作数存在堆栈中，隐含使用堆栈指针寄存器SP
 SP指向栈顶
 硬堆栈：存在寄存器 软堆栈：存在主存 出栈：SP指向栈顶，读元素</description>
+    </item>
+    
+    <item>
+      <title>5.2 数据通路</title>
+      <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/cpu/%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF/</guid>
+      <description>数据通路#数据的流动
+微操作信号发生器 发生不同的控制信号，使得数据流动
+数据流动方向#寄存器之间#本质上是电路，CU的控制信号选择开关决定能流向哪里
+PCout有效，(PC) -&amp;gt; Bus
+MARin有效，Bus -&amp;gt; MAR
+主存与CPU之间#CU需要发出 读or写信号，一般没有画出但需要知道
+算术逻辑运算#ALU需要两个操作数，但是单总线结构同时只能传一个，孤儿有暂存寄存器Y，先把一个传到Y，Y和ALU直接相连，再把另一个传给ALU
+每一个微操作至少花费一个时钟周期
+()表示内容，也可能表示间接寻址
+(PC)+1 -&amp;gt; PC 是自动完成的，一般不经过ALU，没有去考虑它的控制信号
+专用数据通路#直接连接，不会有冲突，但是要多路的选择</description>
     </item>
     
     <item>
@@ -366,6 +447,23 @@ LFU：最不经常使用
 写命中#写回法：只在改块被替换时（且是被修改过的）才写回主存，容易数据不一致
 全写法：修改cache同时也写主存
 这样会影响写的速度，于是设计之间有一个写缓冲，在专门的控制电路上逐一写回</description>
+    </item>
+    
+    <item>
+      <title>4.4 CISC与RISC</title>
+      <link>https://zvictorliu.github.io/computer_organization/command/%E4%B8%A4%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%96%B9%E5%90%91/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/command/%E4%B8%A4%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%96%B9%E5%90%91/</guid>
+      <description>CISC与RISC#精简RISC：一条指令的功能尽可能基础，多条指令组合完成复杂功能
+​	代表：ARM架构，一般用于手机平板
+​	功耗低、设计简单
+复杂CISC：一条指令完成一个复杂的基本功能，用到一系列微指令来实现
+​	代表：x86，一般用于PC和台式机
+就相当于C和Python的感觉
+CISC的问题：程序中80%的语句都只用到指令系统中20%的指令
+对比#RISC限制了访存，总需要LOAD/STORE来取写，需要更多的寄存器
+RISC一定要指令流水线</description>
     </item>
     
     <item>

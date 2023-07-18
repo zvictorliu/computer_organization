@@ -6,5 +6,49 @@
     <description>Recent content in 第五章 中央处理器 on Computer Organization</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language><atom:link href="https://zvictorliu.github.io/computer_organization/cpu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>5.1 指令执行过程</title>
+      <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/cpu/%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/</guid>
+      <description>指令执行过程#指令周期#取、译码（很快）、执行，将译码也分在取指令周期内：
+CPU周期和CPU时钟周期不是一个意思
+CPU周期又叫机器周期，一个指令周期需要多个机器周期，一个多个机器周期需要多个时钟周期（又叫节拍），主频也是描述的这个
+不同指令的指令周期的长度可能是不同的：
+整个流程是：
+设置了几个触发器来判断处于哪个阶段，不同阶段的任务、理解不同
+取指周期#(PC) -&amp;gt; MAR
+CU发出读控制信号：1 -&amp;gt; R
+M(MAR) -&amp;gt; MDR，(MDR) -&amp;gt; IR
+CU发出控制信号，使得(PC)+1 -&amp;gt; PC
+间址周期#复制得到有效地址，并不取出操作数
+将地址码送入MAR，可以从IR中得到也可以从MDR中得到，Ad(IR) -&amp;gt; MAR CU发出读信号 &amp;hellip; （将有效地址送给地址码） 执行周期#不同指令的执行周期不同
+中断周期#执行完后都会进行中断检查，如有则执行中断程序
+SP存的是地址，SP-1后即为PC指要放入的地址
+(SP)-1 -&amp;gt; SP，(SP) -&amp;gt; MAR，1 -&amp;gt; W，(PC) -&amp;gt; MDR
+然后修改PC：向量地址 -&amp;gt; PC
+指令执行方案#单指令周期：串行执行，统一时间，木桶效应 多指令周期：不要求定长 流水线：没有冲突的硬件情况下，可以并行，交错一些阶段 </description>
+    </item>
+    
+    <item>
+      <title>5.2 数据通路</title>
+      <link>https://zvictorliu.github.io/computer_organization/cpu/%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/cpu/%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF/</guid>
+      <description>数据通路#数据的流动
+微操作信号发生器 发生不同的控制信号，使得数据流动
+数据流动方向#寄存器之间#本质上是电路，CU的控制信号选择开关决定能流向哪里
+PCout有效，(PC) -&amp;gt; Bus
+MARin有效，Bus -&amp;gt; MAR
+主存与CPU之间#CU需要发出 读or写信号，一般没有画出但需要知道
+算术逻辑运算#ALU需要两个操作数，但是单总线结构同时只能传一个，孤儿有暂存寄存器Y，先把一个传到Y，Y和ALU直接相连，再把另一个传给ALU
+每一个微操作至少花费一个时钟周期
+()表示内容，也可能表示间接寻址
+(PC)+1 -&amp;gt; PC 是自动完成的，一般不经过ALU，没有去考虑它的控制信号
+专用数据通路#直接连接，不会有冲突，但是要多路的选择</description>
+    </item>
+    
   </channel>
 </rss>

@@ -3,23 +3,15 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="浮点数#从科学计数法的思想而来
-表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
-尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
-规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
-左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#">
+<meta name="description" content="硬布线设计方式#分析每个阶段的微操作序列 选择CPU的控制方式（定长机器周期，内含3个节拍） 安排微操作时序 先后顺序不能随意更改 被控对象不同的微操作尽量放在同一个节拍完成 时间短的微操作尽量放在一个节拍内完成，按先后顺序一条龙完成 电路设计（根据逻辑表达式设计电路） 操作时间表 最简逻辑表达式 电路 这样硬件设计的叫做硬布线，很快但是如果需要扩充指令就需要重新搭电路">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="2.2 浮点数" />
-<meta property="og:description" content="浮点数#从科学计数法的思想而来
-表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
-尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
-规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
-左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#" />
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="" />
+<meta property="og:description" content="硬布线设计方式#分析每个阶段的微操作序列 选择CPU的控制方式（定长机器周期，内含3个节拍） 安排微操作时序 先后顺序不能随意更改 被控对象不同的微操作尽量放在同一个节拍完成 时间短的微操作尽量放在一个节拍内完成，按先后顺序一条龙完成 电路设计（根据逻辑表达式设计电路） 操作时间表 最简逻辑表达式 电路 这样硬件设计的叫做硬布线，很快但是如果需要扩充指令就需要重新搭电路" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" /><meta property="article:section" content="encode" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E7%A1%AC%E5%B8%83%E7%BA%BF/" /><meta property="article:section" content="cpu" />
 
 
-<title>2.2 浮点数 | Computer Organization</title>
+<title>硬布线 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
@@ -122,7 +114,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="active">2.2 浮点数</a>
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
   
 
         </li>
@@ -405,7 +397,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <input type="checkbox" id="section-6b229044f72e955e2739da441d69bfbb" class="toggle"  />
+    <input type="checkbox" id="section-6b229044f72e955e2739da441d69bfbb" class="toggle" checked />
     <label for="section-6b229044f72e955e2739da441d69bfbb" class="flex justify-between">
       <a href="/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/" class="">5.3 控制器</a>
     </label>
@@ -421,7 +413,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E7%A1%AC%E5%B8%83%E7%BA%BF/" class="">硬布线</a>
+    <a href="/computer_organization/cpu/%E6%8E%A7%E5%88%B6%E5%99%A8/%E7%A1%AC%E5%B8%83%E7%BA%BF/" class="active">硬布线</a>
   
 
         </li>
@@ -540,7 +532,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>2.2 浮点数</strong>
+  <strong>硬布线</strong>
 
   <label for="toc-control">
     
@@ -557,12 +549,7 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#表示">表示</a>
-      <ul>
-        <li><a href="#规格化">规格化</a></li>
-      </ul>
-    </li>
-    <li><a href="#运算">运算</a></li>
+    <li><a href="#硬布线设计方式">硬布线设计方式</a></li>
   </ul>
 </nav>
 
@@ -575,40 +562,29 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="浮点数">
-  浮点数
-  <a class="anchor" href="#%e6%b5%ae%e7%82%b9%e6%95%b0">#</a>
-</h1>
-<p>从科学计数法的思想而来</p>
-<h2 id="表示">
-  表示
-  <a class="anchor" href="#%e8%a1%a8%e7%a4%ba">#</a>
+  <article class="markdown"><h2 id="硬布线设计方式">
+  硬布线设计方式
+  <a class="anchor" href="#%e7%a1%ac%e5%b8%83%e7%ba%bf%e8%ae%be%e8%ae%a1%e6%96%b9%e5%bc%8f">#</a>
 </h2>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702201516300.png" alt="image-20230702201516300" style="zoom:67%;" />
-
-<link rel="stylesheet" href="/computer_organization/katex/katex.min.css" />
-<script defer src="/computer_organization/katex/katex.min.js"></script>
-<script defer src="/computer_organization/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
-  \[
-N = 尾数M \times 基数r^{阶码E}\]
-</span>
-
-<p>基数隐含是规定值，一般是2</p>
-<p>尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小</p>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702201618782.png" alt="image-20230702201618782" style="zoom:80%;" />
-<h3 id="规格化">
-  规格化
-  <a class="anchor" href="#%e8%a7%84%e6%a0%bc%e5%8c%96">#</a>
-</h3>
-<p>10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：</p>
 <ul>
-<li>左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1</li>
-<li>右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数</li>
+<li>分析每个阶段的微操作序列</li>
+<li>选择CPU的控制方式（定长机器周期，内含3个节拍）</li>
+<li>安排微操作时序
+<ul>
+<li>先后顺序不能随意更改</li>
+<li>被控对象不同的微操作尽量放在同一个节拍完成</li>
+<li>时间短的微操作尽量放在一个节拍内完成，按先后顺序一条龙完成</li>
 </ul>
-<h2 id="运算">
-  运算
-  <a class="anchor" href="#%e8%bf%90%e7%ae%97">#</a>
-</h2>
+</li>
+<li>电路设计（根据逻辑表达式设计电路）
+<ul>
+<li>操作时间表</li>
+<li>最简逻辑表达式</li>
+<li>电路</li>
+</ul>
+</li>
+</ul>
+<p>这样硬件设计的叫做<strong>硬布线</strong>，很快但是如果需要扩充指令就需要重新搭电路</p>
 </article>
  
       
@@ -689,12 +665,7 @@ code.has-jax {
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#表示">表示</a>
-      <ul>
-        <li><a href="#规格化">规格化</a></li>
-      </ul>
-    </li>
-    <li><a href="#运算">运算</a></li>
+    <li><a href="#硬布线设计方式">硬布线设计方式</a></li>
   </ul>
 </nav>
 

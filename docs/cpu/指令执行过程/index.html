@@ -3,23 +3,47 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="浮点数#从科学计数法的思想而来
-表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
-尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
-规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
-左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#">
+<meta name="description" content="指令执行过程#指令周期#取、译码（很快）、执行，将译码也分在取指令周期内：
+CPU周期和CPU时钟周期不是一个意思
+CPU周期又叫机器周期，一个指令周期需要多个机器周期，一个多个机器周期需要多个时钟周期（又叫节拍），主频也是描述的这个
+不同指令的指令周期的长度可能是不同的：
+整个流程是：
+设置了几个触发器来判断处于哪个阶段，不同阶段的任务、理解不同
+取指周期#(PC) -&gt; MAR
+CU发出读控制信号：1 -&gt; R
+M(MAR) -&gt; MDR，(MDR) -&gt; IR
+CU发出控制信号，使得(PC)&#43;1 -&gt; PC
+间址周期#复制得到有效地址，并不取出操作数
+将地址码送入MAR，可以从IR中得到也可以从MDR中得到，Ad(IR) -&gt; MAR CU发出读信号 &hellip; （将有效地址送给地址码） 执行周期#不同指令的执行周期不同
+中断周期#执行完后都会进行中断检查，如有则执行中断程序
+SP存的是地址，SP-1后即为PC指要放入的地址
+(SP)-1 -&gt; SP，(SP) -&gt; MAR，1 -&gt; W，(PC) -&gt; MDR
+然后修改PC：向量地址 -&gt; PC
+指令执行方案#单指令周期：串行执行，统一时间，木桶效应 多指令周期：不要求定长 流水线：没有冲突的硬件情况下，可以并行，交错一些阶段 ">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="2.2 浮点数" />
-<meta property="og:description" content="浮点数#从科学计数法的思想而来
-表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
-尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
-规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
-左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#" />
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="5.1 指令执行过程" />
+<meta property="og:description" content="指令执行过程#指令周期#取、译码（很快）、执行，将译码也分在取指令周期内：
+CPU周期和CPU时钟周期不是一个意思
+CPU周期又叫机器周期，一个指令周期需要多个机器周期，一个多个机器周期需要多个时钟周期（又叫节拍），主频也是描述的这个
+不同指令的指令周期的长度可能是不同的：
+整个流程是：
+设置了几个触发器来判断处于哪个阶段，不同阶段的任务、理解不同
+取指周期#(PC) -&gt; MAR
+CU发出读控制信号：1 -&gt; R
+M(MAR) -&gt; MDR，(MDR) -&gt; IR
+CU发出控制信号，使得(PC)&#43;1 -&gt; PC
+间址周期#复制得到有效地址，并不取出操作数
+将地址码送入MAR，可以从IR中得到也可以从MDR中得到，Ad(IR) -&gt; MAR CU发出读信号 &hellip; （将有效地址送给地址码） 执行周期#不同指令的执行周期不同
+中断周期#执行完后都会进行中断检查，如有则执行中断程序
+SP存的是地址，SP-1后即为PC指要放入的地址
+(SP)-1 -&gt; SP，(SP) -&gt; MAR，1 -&gt; W，(PC) -&gt; MDR
+然后修改PC：向量地址 -&gt; PC
+指令执行方案#单指令周期：串行执行，统一时间，木桶效应 多指令周期：不要求定长 流水线：没有冲突的硬件情况下，可以并行，交错一些阶段 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" /><meta property="article:section" content="encode" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/cpu/%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/" /><meta property="article:section" content="cpu" />
 
 
-<title>2.2 浮点数 | Computer Organization</title>
+<title>5.1 指令执行过程 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
@@ -122,7 +146,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="active">2.2 浮点数</a>
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
   
 
         </li>
@@ -379,7 +403,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/cpu/%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/" class="">5.1 指令执行过程</a>
+    <a href="/computer_organization/cpu/%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/" class="active">5.1 指令执行过程</a>
   
 
         </li>
@@ -540,7 +564,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>2.2 浮点数</strong>
+  <strong>5.1 指令执行过程</strong>
 
   <label for="toc-control">
     
@@ -557,12 +581,15 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#表示">表示</a>
+    <li><a href="#指令周期">指令周期</a>
       <ul>
-        <li><a href="#规格化">规格化</a></li>
+        <li><a href="#取指周期">取指周期</a></li>
+        <li><a href="#间址周期">间址周期</a></li>
+        <li><a href="#执行周期">执行周期</a></li>
+        <li><a href="#中断周期">中断周期</a></li>
       </ul>
     </li>
-    <li><a href="#运算">运算</a></li>
+    <li><a href="#指令执行方案">指令执行方案</a></li>
   </ul>
 </nav>
 
@@ -575,40 +602,75 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="浮点数">
-  浮点数
-  <a class="anchor" href="#%e6%b5%ae%e7%82%b9%e6%95%b0">#</a>
+  <article class="markdown"><h1 id="指令执行过程">
+  指令执行过程
+  <a class="anchor" href="#%e6%8c%87%e4%bb%a4%e6%89%a7%e8%a1%8c%e8%bf%87%e7%a8%8b">#</a>
 </h1>
-<p>从科学计数法的思想而来</p>
-<h2 id="表示">
-  表示
-  <a class="anchor" href="#%e8%a1%a8%e7%a4%ba">#</a>
+<h2 id="指令周期">
+  指令周期
+  <a class="anchor" href="#%e6%8c%87%e4%bb%a4%e5%91%a8%e6%9c%9f">#</a>
 </h2>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702201516300.png" alt="image-20230702201516300" style="zoom:67%;" />
-
-<link rel="stylesheet" href="/computer_organization/katex/katex.min.css" />
-<script defer src="/computer_organization/katex/katex.min.js"></script>
-<script defer src="/computer_organization/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
-  \[
-N = 尾数M \times 基数r^{阶码E}\]
-</span>
-
-<p>基数隐含是规定值，一般是2</p>
-<p>尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小</p>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702201618782.png" alt="image-20230702201618782" style="zoom:80%;" />
-<h3 id="规格化">
-  规格化
-  <a class="anchor" href="#%e8%a7%84%e6%a0%bc%e5%8c%96">#</a>
+<p>取、译码（很快）、执行，将译码也分在取指令周期内：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230718112224779.png" alt="image-20230718112224779" style="zoom:67%;" />
+<p>CPU周期和CPU时钟周期不是一个意思</p>
+<p>CPU周期又叫机器周期，一个指令周期需要多个机器周期，一个多个机器周期需要多个时钟周期（又叫节拍），主频也是描述的这个</p>
+<p>不同指令的指令周期的长度可能是不同的：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230718112830028.png" alt="image-20230718112830028" style="zoom:67%;" />
+<p>整个流程是：</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230718112901407.png" alt="image-20230718112901407" style="zoom:67%;" />
+<p>设置了几个触发器来判断处于哪个阶段，不同阶段的任务、理解不同</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230718113147138.png" alt="image-20230718113147138" style="zoom:67%;" /> 
+<h3 id="取指周期">
+  取指周期
+  <a class="anchor" href="#%e5%8f%96%e6%8c%87%e5%91%a8%e6%9c%9f">#</a>
 </h3>
-<p>10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：</p>
 <ul>
-<li>左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1</li>
-<li>右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数</li>
+<li>
+<p>(PC) -&gt; MAR</p>
+</li>
+<li>
+<p>CU发出读控制信号：1 -&gt; R</p>
+</li>
+<li>
+<p>M(MAR) -&gt; MDR，(MDR) -&gt; IR</p>
+</li>
+<li>
+<p>CU发出控制信号，使得(PC)+1 -&gt; PC</p>
+</li>
 </ul>
-<h2 id="运算">
-  运算
-  <a class="anchor" href="#%e8%bf%90%e7%ae%97">#</a>
+<h3 id="间址周期">
+  间址周期
+  <a class="anchor" href="#%e9%97%b4%e5%9d%80%e5%91%a8%e6%9c%9f">#</a>
+</h3>
+<p>复制得到有效地址，并不取出操作数</p>
+<ul>
+<li>将地址码送入MAR，可以从IR中得到也可以从MDR中得到，Ad(IR) -&gt; MAR</li>
+<li>CU发出读信号</li>
+<li>&hellip;</li>
+<li>（将有效地址送给地址码）</li>
+</ul>
+<h3 id="执行周期">
+  执行周期
+  <a class="anchor" href="#%e6%89%a7%e8%a1%8c%e5%91%a8%e6%9c%9f">#</a>
+</h3>
+<p>不同指令的执行周期不同</p>
+<h3 id="中断周期">
+  中断周期
+  <a class="anchor" href="#%e4%b8%ad%e6%96%ad%e5%91%a8%e6%9c%9f">#</a>
+</h3>
+<p>执行完后都会进行中断检查，如有则执行中断程序</p>
+<p>SP存的是地址，SP-1后即为PC指要放入的地址</p>
+<p>(SP)-1 -&gt; SP，(SP) -&gt; MAR，1 -&gt; W，(PC) -&gt; MDR</p>
+<p>然后修改PC：向量地址 -&gt; PC</p>
+<h2 id="指令执行方案">
+  指令执行方案
+  <a class="anchor" href="#%e6%8c%87%e4%bb%a4%e6%89%a7%e8%a1%8c%e6%96%b9%e6%a1%88">#</a>
 </h2>
+<ul>
+<li>单指令周期：串行执行，统一时间，木桶效应</li>
+<li>多指令周期：不要求定长</li>
+<li>流水线：没有冲突的硬件情况下，可以并行，交错一些阶段</li>
+</ul>
 </article>
  
       
@@ -689,12 +751,15 @@ code.has-jax {
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#表示">表示</a>
+    <li><a href="#指令周期">指令周期</a>
       <ul>
-        <li><a href="#规格化">规格化</a></li>
+        <li><a href="#取指周期">取指周期</a></li>
+        <li><a href="#间址周期">间址周期</a></li>
+        <li><a href="#执行周期">执行周期</a></li>
+        <li><a href="#中断周期">中断周期</a></li>
       </ul>
     </li>
-    <li><a href="#运算">运算</a></li>
+    <li><a href="#指令执行方案">指令执行方案</a></li>
   </ul>
 </nav>
 

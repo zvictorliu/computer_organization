@@ -115,5 +115,22 @@ xxx还可以是个表达式，表示地址的偏移，算出来的结果才是�
 常见指令#数据传送：mov	push/pop 算术运算：add/sub mul/div imul/idiv(有符号) 逻辑运算：and/or/xor/neg shl/shr(逻辑左右移) 控制流：jmp j&amp;lt;condition&amp;gt;(最后一个运算结果的标志位) cmp/test call/ret 在x86中不允许两个操作数同时来自主存，所以一般要先调入寄存器</description>
     </item>
     
+    <item>
+      <title>4.4 CISC与RISC</title>
+      <link>https://zvictorliu.github.io/computer_organization/command/%E4%B8%A4%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%96%B9%E5%90%91/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://zvictorliu.github.io/computer_organization/command/%E4%B8%A4%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%96%B9%E5%90%91/</guid>
+      <description>CISC与RISC#精简RISC：一条指令的功能尽可能基础，多条指令组合完成复杂功能
+​	代表：ARM架构，一般用于手机平板
+​	功耗低、设计简单
+复杂CISC：一条指令完成一个复杂的基本功能，用到一系列微指令来实现
+​	代表：x86，一般用于PC和台式机
+就相当于C和Python的感觉
+CISC的问题：程序中80%的语句都只用到指令系统中20%的指令
+对比#RISC限制了访存，总需要LOAD/STORE来取写，需要更多的寄存器
+RISC一定要指令流水线</description>
+    </item>
+    
   </channel>
 </rss>
