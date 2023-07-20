@@ -3,23 +3,45 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="浮点数#从科学计数法的思想而来
-表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
-尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
-规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
-左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#">
+<meta name="description" content="性能指标#总线周期：申请 - 寻址 - 传输 - 结束，即一次总线操作所需要的时间
+工作频率：1 / 总线周期
+总线时钟周期：机器的时钟周期（现代的可能是桥接器的时钟周期），和总线周期不一样
+总线时钟频率
+总线宽度：一般指数据总线的根数
+总线带宽：数据传输率，单位时间内可以传输多少bit或者字节的数据
+有效数据传输速率不包括校验位那些bit
+总线复用
+信号线数：三种总线数的总和
+(1)
+每个时钟周期传两次数据，意思就是一个时钟周期=2个总线周期
+工作频率为 $2 \times 66MHz$，宽度为32位，所以带宽是 $32 * 2 * 66MHz$
+(2)
+传地址占一个时钟周期（突发只传一次）
+传128位数据，宽度为32位所以需要传4次即4个总线周期，即2个时钟周期
+一个三个时钟周期">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="2.2 浮点数" />
-<meta property="og:description" content="浮点数#从科学计数法的思想而来
-表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
-尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
-规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
-左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#" />
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="6.2 性能指标" />
+<meta property="og:description" content="性能指标#总线周期：申请 - 寻址 - 传输 - 结束，即一次总线操作所需要的时间
+工作频率：1 / 总线周期
+总线时钟周期：机器的时钟周期（现代的可能是桥接器的时钟周期），和总线周期不一样
+总线时钟频率
+总线宽度：一般指数据总线的根数
+总线带宽：数据传输率，单位时间内可以传输多少bit或者字节的数据
+有效数据传输速率不包括校验位那些bit
+总线复用
+信号线数：三种总线数的总和
+(1)
+每个时钟周期传两次数据，意思就是一个时钟周期=2个总线周期
+工作频率为 $2 \times 66MHz$，宽度为32位，所以带宽是 $32 * 2 * 66MHz$
+(2)
+传地址占一个时钟周期（突发只传一次）
+传128位数据，宽度为32位所以需要传4次即4个总线周期，即2个时钟周期
+一个三个时钟周期" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" /><meta property="article:section" content="encode" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/bus/%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/" /><meta property="article:section" content="bus" />
 
 
-<title>2.2 浮点数 | Computer Organization</title>
+<title>6.2 性能指标 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
@@ -122,7 +144,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="active">2.2 浮点数</a>
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
   
 
         </li>
@@ -509,7 +531,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/bus/%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/" class="">6.2 性能指标</a>
+    <a href="/computer_organization/bus/%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/" class="active">6.2 性能指标</a>
   
 
         </li>
@@ -605,7 +627,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>2.2 浮点数</strong>
+  <strong>6.2 性能指标</strong>
 
   <label for="toc-control">
     
@@ -620,16 +642,7 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents">
-  <ul>
-    <li><a href="#表示">表示</a>
-      <ul>
-        <li><a href="#规格化">规格化</a></li>
-      </ul>
-    </li>
-    <li><a href="#运算">运算</a></li>
-  </ul>
-</nav>
+<nav id="TableOfContents"></nav>
 
 
 
@@ -640,40 +653,45 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="浮点数">
-  浮点数
-  <a class="anchor" href="#%e6%b5%ae%e7%82%b9%e6%95%b0">#</a>
+  <article class="markdown"><h1 id="性能指标">
+  性能指标
+  <a class="anchor" href="#%e6%80%a7%e8%83%bd%e6%8c%87%e6%a0%87">#</a>
 </h1>
-<p>从科学计数法的思想而来</p>
-<h2 id="表示">
-  表示
-  <a class="anchor" href="#%e8%a1%a8%e7%a4%ba">#</a>
-</h2>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702201516300.png" alt="image-20230702201516300" style="zoom:67%;" />
-
-<link rel="stylesheet" href="/computer_organization/katex/katex.min.css" />
-<script defer src="/computer_organization/katex/katex.min.js"></script>
-<script defer src="/computer_organization/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
-  \[
-N = 尾数M \times 基数r^{阶码E}\]
-</span>
-
-<p>基数隐含是规定值，一般是2</p>
-<p>尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小</p>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702201618782.png" alt="image-20230702201618782" style="zoom:80%;" />
-<h3 id="规格化">
-  规格化
-  <a class="anchor" href="#%e8%a7%84%e6%a0%bc%e5%8c%96">#</a>
-</h3>
-<p>10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：</p>
 <ul>
-<li>左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1</li>
-<li>右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数</li>
+<li>
+<p>总线周期：申请 - 寻址 - 传输 - 结束，即一次总线操作所需要的时间</p>
+</li>
+<li>
+<p>工作频率：1 / 总线周期</p>
+</li>
+<li>
+<p>总线时钟周期：机器的时钟周期（现代的可能是桥接器的时钟周期），和总线周期不一样</p>
+</li>
+<li>
+<p>总线时钟频率</p>
+</li>
+<li>
+<p>总线宽度：一般指数据总线的根数</p>
+</li>
+<li>
+<p>总线带宽：数据传输率，单位时间内可以传输多少bit或者字节的数据</p>
+<p>有效数据传输速率不包括校验位那些bit</p>
+</li>
+<li>
+<p>总线复用</p>
+</li>
+<li>
+<p>信号线数：三种总线数的总和</p>
+</li>
 </ul>
-<h2 id="运算">
-  运算
-  <a class="anchor" href="#%e8%bf%90%e7%ae%97">#</a>
-</h2>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230720123248015.png" alt="image-20230720123248015" /></p>
+<p>(1)</p>
+<p>每个时钟周期传两次数据，意思就是一个时钟周期=2个总线周期</p>
+<p>工作频率为 $2 \times 66MHz$，宽度为32位，所以带宽是 $32 * 2 * 66MHz$</p>
+<p>(2)</p>
+<p>传地址占一个时钟周期（突发只传一次）</p>
+<p>传128位数据，宽度为32位所以需要传4次即4个总线周期，即2个时钟周期</p>
+<p>一个三个时钟周期</p>
 </article>
  
       
@@ -752,16 +770,7 @@ code.has-jax {
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents">
-  <ul>
-    <li><a href="#表示">表示</a>
-      <ul>
-        <li><a href="#规格化">规格化</a></li>
-      </ul>
-    </li>
-    <li><a href="#运算">运算</a></li>
-  </ul>
-</nav>
+<nav id="TableOfContents"></nav>
 
 
  

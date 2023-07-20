@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="总线#">
+<meta name="description" content="总线#每个总线内部可能是多根信号线，所以是可以并行传输多少位的数据的
+同一时刻只能有一个部件发送（分时），而总线上多个设备都可以接收（共享）
+分类#串行总线：（如USB）
+并行总线：干扰会更明显
+注意串行并不一定比并行慢，带宽可能更高（频率影响）
+片内总线：CPU芯片内部的寄存器与寄存器、ALU之间的连接线 系统总线： 数组总线：位数与机器字长和存储字长相关 地址总线：和主存地址空间、设备数量（统一编址）有关，单向（CPU -&gt; MEM） 控制总线：单根是单向的 通信总线：连接不同计算机 ">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light dark"><meta property="og:title" content="第六章 总线" />
 <meta property="og:description" content="" />
@@ -14,7 +19,7 @@
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
   <script defer src="/computer_organization/flexsearch.min.js"></script>
-  <script defer src="/computer_organization/en.search.min.d53385f1862c553551540292a20c87e3fe2c0ec6eb8024e8ed6cee7c457d9a63.js" integrity="sha256-1TOF8YYsVTVRVAKSogyH4/4sDsbrgCTo7WzufEV9mmM=" crossorigin="anonymous"></script>
+  <script defer src="/computer_organization/en.search.min.92404bdce999e9a8348c3836d77101d7d8d59f9d5f6a3f3f4f1ce4fd69a98fab.js" integrity="sha256-kkBL3OmZ6ag0jDg213EB19jVn51faj8/Txzk/Wmpj6s=" crossorigin="anonymous"></script>
 <link rel="alternate" type="application/rss+xml" href="https://zvictorliu.github.io/computer_organization/bus/index.xml" title="Computer Organization" />
 <!--
 Made with Book Theme
@@ -480,6 +485,45 @@ https://github.com/alex-shpak/hugo-book
           
   <ul>
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/%E7%B3%BB%E7%BB%9F%E6%80%BB%E7%BA%BF%E7%BB%93%E6%9E%84/" class="">6.1 总线结构</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/" class="">6.2 性能指标</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/computer_organization/bus/%E4%BA%8B%E5%8A%A1%E5%92%8C%E5%AE%9A%E6%97%B6/" class="">6.3 操作与定时</a>
+  
+
+        </li>
+      
+    
   </ul>
 
         </li>
@@ -572,7 +616,11 @@ https://github.com/alex-shpak/hugo-book
   <aside class="hidden clearfix">
     
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#分类">分类</a></li>
+  </ul>
+</nav>
 
 
 
@@ -587,6 +635,41 @@ https://github.com/alex-shpak/hugo-book
   总线
   <a class="anchor" href="#%e6%80%bb%e7%ba%bf">#</a>
 </h1>
+<p>每个总线内部可能是多根信号线，所以是可以并行传输多少位的数据的</p>
+<p>同一时刻只能有一个部件发送（分时），而总线上多个设备都可以接收（共享）</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230720115247869.png" alt="image-20230720115247869" style="zoom: 50%;" />
+<h2 id="分类">
+  分类
+  <a class="anchor" href="#%e5%88%86%e7%b1%bb">#</a>
+</h2>
+<div class="book-columns flex flex-wrap">
+
+  <div class="flex-even markdown-inner">
+    <!-- begin columns block -->
+<p>串行总线：（如USB）</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230720115807560.png" alt="image-20230720115807560" style="zoom:67%;" />
+  </div>
+
+  <div class="flex-even markdown-inner">
+    <!-- magic separator, between columns -->
+<p>并行总线：干扰会更明显</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230720115755952.png" alt="image-20230720115755952" style="zoom:67%;" />
+  </div>
+
+</div>
+
+<p>注意串行并不一定比并行慢，带宽可能更高（频率影响）</p>
+<ul>
+<li>片内总线：CPU芯片内部的寄存器与寄存器、ALU之间的连接线</li>
+<li>系统总线：
+<ul>
+<li>数组总线：位数与机器字长和存储字长相关</li>
+<li>地址总线：和主存地址空间、设备数量（统一编址）有关，单向（CPU -&gt; MEM）</li>
+<li>控制总线：单根是单向的</li>
+</ul>
+</li>
+<li>通信总线：连接不同计算机</li>
+</ul>
 </article>
  
       
@@ -665,7 +748,11 @@ code.has-jax {
       <div class="book-toc-content">
         
   
-<nav id="TableOfContents"></nav>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#分类">分类</a></li>
+  </ul>
+</nav>
 
 
  
