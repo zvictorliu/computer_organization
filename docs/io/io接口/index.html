@@ -3,23 +3,43 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="浮点数#从科学计数法的思想而来
-表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
-尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
-规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
-左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#">
+<meta name="description" content="IO接口#功能#数据缓冲
+错误或状态监测
+控制和定时设备
+数据格式转换：串并转换
+结构#设备侧：可以一个IO接口连多个设备
+主机侧：
+主机CPU发送命令字到IO控制寄存器（格式需要设备驱动程序）
+主机也可以从状态寄存器读出状态字以获取设备状态信息（轮询or通过控制线发出中断）
+主机通过数据缓冲寄存器进行发送或读取
+由于IO控制逻辑从控制寄存器读取出命令字之和就不需要了，只用到一次，命令和状态在时间上错开，因此一般状态和控制是同一个寄存器只是数据传输方向不同
+各种寄存器被称为IO端口，通过地址线指明对哪个寄存器进行交换（多个设备，每个设备一组寄存器，对不同组的寄存器操作就是对不同设备进行操作）
+控制线：CPU发出读写信号，设备发出中断请求
+中断类型信号还是经过数据线传递的
+IO端口的编址#统一编址：在主存的地址空间，根据地址码的范围就区分了是访存还是访问外设，访问外设的指令和访存是一样的
+独立编址：就需要特定的IO指令 IN/OUT N">
 <meta name="theme-color" content="#FFFFFF">
-<meta name="color-scheme" content="light dark"><meta property="og:title" content="2.2 浮点数" />
-<meta property="og:description" content="浮点数#从科学计数法的思想而来
-表示#\[N = 尾数M \times 基数r^{阶码E}\]基数隐含是规定值，一般是2
-尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小
-规格化#10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：
-左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1 右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数 运算#" />
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="7.1 IO接口" />
+<meta property="og:description" content="IO接口#功能#数据缓冲
+错误或状态监测
+控制和定时设备
+数据格式转换：串并转换
+结构#设备侧：可以一个IO接口连多个设备
+主机侧：
+主机CPU发送命令字到IO控制寄存器（格式需要设备驱动程序）
+主机也可以从状态寄存器读出状态字以获取设备状态信息（轮询or通过控制线发出中断）
+主机通过数据缓冲寄存器进行发送或读取
+由于IO控制逻辑从控制寄存器读取出命令字之和就不需要了，只用到一次，命令和状态在时间上错开，因此一般状态和控制是同一个寄存器只是数据传输方向不同
+各种寄存器被称为IO端口，通过地址线指明对哪个寄存器进行交换（多个设备，每个设备一组寄存器，对不同组的寄存器操作就是对不同设备进行操作）
+控制线：CPU发出读写信号，设备发出中断请求
+中断类型信号还是经过数据线传递的
+IO端口的编址#统一编址：在主存的地址空间，根据地址码的范围就区分了是访存还是访问外设，访问外设的指令和访存是一样的
+独立编址：就需要特定的IO指令 IN/OUT N" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" /><meta property="article:section" content="encode" />
+<meta property="og:url" content="https://zvictorliu.github.io/computer_organization/io/io%E6%8E%A5%E5%8F%A3/" /><meta property="article:section" content="io" />
 
 
-<title>2.2 浮点数 | Computer Organization</title>
+<title>7.1 IO接口 | Computer Organization</title>
 <link rel="manifest" href="/computer_organization/manifest.json">
 <link rel="icon" href="/computer_organization/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/computer_organization/book.min.33a48f5432973b8ff9a82679d9e45d67f2c15d4399bd2829269455cfe390b5e8.css" integrity="sha256-M6SPVDKXO4/5qCZ52eRdZ/LBXUOZvSgpJpRVz&#43;OQteg=" crossorigin="anonymous">
@@ -122,7 +142,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="active">2.2 浮点数</a>
+    <a href="/computer_organization/encode/%E6%B5%AE%E7%82%B9%E6%95%B0/" class="">2.2 浮点数</a>
   
 
         </li>
@@ -553,7 +573,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/computer_organization/io/io%E6%8E%A5%E5%8F%A3/" class="">7.1 IO接口</a>
+    <a href="/computer_organization/io/io%E6%8E%A5%E5%8F%A3/" class="active">7.1 IO接口</a>
   
 
         </li>
@@ -631,7 +651,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/computer_organization/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>2.2 浮点数</strong>
+  <strong>7.1 IO接口</strong>
 
   <label for="toc-control">
     
@@ -648,12 +668,9 @@ https://github.com/alex-shpak/hugo-book
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#表示">表示</a>
-      <ul>
-        <li><a href="#规格化">规格化</a></li>
-      </ul>
-    </li>
-    <li><a href="#运算">运算</a></li>
+    <li><a href="#功能">功能</a></li>
+    <li><a href="#结构">结构</a></li>
+    <li><a href="#io端口的编址">IO端口的编址</a></li>
   </ul>
 </nav>
 
@@ -666,41 +683,59 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><h1 id="浮点数">
-  浮点数
-  <a class="anchor" href="#%e6%b5%ae%e7%82%b9%e6%95%b0">#</a>
+  <article class="markdown"><h1 id="io接口">
+  IO接口
+  <a class="anchor" href="#io%e6%8e%a5%e5%8f%a3">#</a>
 </h1>
-<p>从科学计数法的思想而来</p>
-<h2 id="表示">
-  表示
-  <a class="anchor" href="#%e8%a1%a8%e7%a4%ba">#</a>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230720132332767.png" alt="image-20230720132332767" style="zoom:67%;" />
+<h2 id="功能">
+  功能
+  <a class="anchor" href="#%e5%8a%9f%e8%83%bd">#</a>
 </h2>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702201516300.png" alt="image-20230702201516300" style="zoom:67%;" />
-
-<link rel="stylesheet" href="/computer_organization/katex/katex.min.css" />
-<script defer src="/computer_organization/katex/katex.min.js"></script>
-<script defer src="/computer_organization/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
-  \[
-N = 尾数M \times 基数r^{阶码E}\]
-</span>
-
-<p>基数隐含是规定值，一般是2</p>
-<p>尾数是定点小数，表现精度；阶码用以推算小数点位置，表现大小</p>
-<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230702201618782.png" alt="image-20230702201618782" style="zoom:80%;" />
-<h3 id="规格化">
-  规格化
-  <a class="anchor" href="#%e8%a7%84%e6%a0%bc%e5%8c%96">#</a>
-</h3>
-<p>10进制中要求尾数的第一个数为有效值，小数点在其后，在2进制中：</p>
 <ul>
-<li>左规：尾数算术左移直到 第一位（除符号位为）为1，每移动1位阶码也要相应-1</li>
-<li>右规：在运算时有效位走到小数点之前，所以需要右移，减小尾数增大阶数</li>
+<li>
+<p>数据缓冲</p>
+</li>
+<li>
+<p>错误或状态监测</p>
+</li>
+<li>
+<p>控制和定时设备</p>
+</li>
+<li>
+<p>数据格式转换：串并转换</p>
+</li>
 </ul>
-<h2 id="运算">
-  运算
-  <a class="anchor" href="#%e8%bf%90%e7%ae%97">#</a>
+<h2 id="结构">
+  结构
+  <a class="anchor" href="#%e7%bb%93%e6%9e%84">#</a>
 </h2>
-</article>
+<p><img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230720132904050.png" alt="image-20230720132904050" /></p>
+<p>设备侧：可以一个IO接口连多个设备</p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230720133038984.png" alt="image-20230720133038984" style="zoom: 50%;" />
+<p>主机侧：</p>
+<ul>
+<li>
+<p>主机CPU发送命令字到IO控制寄存器（格式需要设备驱动程序）</p>
+</li>
+<li>
+<p>主机也可以从状态寄存器读出状态字以获取设备状态信息（轮询or通过控制线发出中断）</p>
+</li>
+<li>
+<p>主机通过数据缓冲寄存器进行发送或读取</p>
+</li>
+</ul>
+<p>由于IO控制逻辑从控制寄存器读取出命令字之和就不需要了，只用到一次，命令和状态在时间上错开，因此一般状态和控制是同一个寄存器只是数据传输方向不同</p>
+<p>各种寄存器被称为<code>IO端口</code>，通过地址线指明对哪个寄存器进行交换（多个设备，每个设备一组寄存器，对不同组的寄存器操作就是对不同设备进行操作）</p>
+<p>控制线：CPU发出读写信号，设备发出中断请求</p>
+<p>中断类型信号还是经过数据线传递的</p>
+<h2 id="io端口的编址">
+  IO端口的编址
+  <a class="anchor" href="#io%e7%ab%af%e5%8f%a3%e7%9a%84%e7%bc%96%e5%9d%80">#</a>
+</h2>
+<p>统一编址：在主存的地址空间，根据地址码的范围就区分了是访存还是访问外设，访问外设的指令和访存是一样的</p>
+<p>独立编址：就需要特定的IO指令 <code>IN/OUT N</code></p>
+<img src="https://cdn.jsdelivr.net/gh/zvictorliu/typoraPics@main/img/image-20230720134353983.png" alt="image-20230720134353983" style="zoom:67%;" /></article>
  
       
 
@@ -780,12 +815,9 @@ code.has-jax {
   
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#表示">表示</a>
-      <ul>
-        <li><a href="#规格化">规格化</a></li>
-      </ul>
-    </li>
-    <li><a href="#运算">运算</a></li>
+    <li><a href="#功能">功能</a></li>
+    <li><a href="#结构">结构</a></li>
+    <li><a href="#io端口的编址">IO端口的编址</a></li>
   </ul>
 </nav>
 
